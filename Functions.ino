@@ -1,4 +1,4 @@
-bool initializePins() {
+void initializePins() {
   // INDICATOR LEDS
   pinMode(indicatorLeds[0], OUTPUT);
   pinMode(indicatorLeds[1], OUTPUT);
@@ -19,10 +19,13 @@ bool initializePins() {
   pinMode(27, INPUT_PULLUP);
   pinMode(28, INPUT_PULLUP);
 
-  return true;  
 }
 
-bool flashRebootLights(int speed) {
+void flashRebootLights(int speed) {
+  // Turn off Teensy LED
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+  
   int i = 0;
   while(i < 20) {
     digitalWrite(indicatorLeds[0], HIGH);
@@ -39,11 +42,30 @@ bool flashRebootLights(int speed) {
     digitalWrite(indicatorLeds[3], LOW);
     i++;
   }
-  return true;
 }
 
 
-bool initalizeOscillators() {
+void initializeMixers() {
+  mixer1.gain(0, 1);
+  mixer1.gain(1, 1);
+  mixer1.gain(2, 1);
+  mixer1.gain(3, 1);
+  mixer2.gain(0, 1);
+  mixer2.gain(1, 1);
+  mixer2.gain(2, 1);
+  mixer2.gain(3, 1);
+  mixer3.gain(0, 1);
+  mixer3.gain(1, 1);
+  mixer3.gain(2, 1);
+  mixer3.gain(3, 1);
+  mixer4.gain(0, 1);
+  mixer4.gain(1, 1);
+  mixer4.gain(2, 1);
+  mixer4.gain(3, 1);
+}
+
+
+void initalizeOscillators() {
   waveform1.begin( WAVEFORM_SINE );
   waveform1.frequency( 440 );
   waveform1.amplitude(0.5);
@@ -73,9 +95,12 @@ bool initalizeOscillators() {
   envelope3.release(200);
   envelope4.release(200);
 
-  return true;
-
 }
 
+
+
+float calculateOscillatorInterval(int sliderValue) {
+//  return mapfloat(sliderValue, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
+}
 
 

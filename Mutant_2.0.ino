@@ -93,6 +93,15 @@ long transposeLastChecked = 0;
 int newScale;
 
 
+// Initialize the Tonebank variables
+int tonebank[6] ={WAVEFORM_SINE,WAVEFORM_TRIANGLE,WAVEFORM_SAWTOOTH_REVERSE,WAVEFORM_SAWTOOTH,WAVEFORM_SQUARE,WAVEFORM_PULSE};
+int oldWaveform = tonebank[0];
+
+// Initialize Scales and Waveforms
+// C C# D D# E F F# G G# A A# B
+const float scales[12] ={16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87};
+int oldScale = scales[0];
+
 
 
 void setup() {
@@ -105,29 +114,8 @@ void setup() {
   initializePins();
   flashRebootLights(50);
 
-
   initalizeOscillators();
-
-  mixer1.gain(0, 1);
-  mixer1.gain(1, 1);
-  mixer1.gain(2, 1);
-  mixer1.gain(3, 1);
-  mixer2.gain(0, 1);
-  mixer2.gain(1, 1);
-  mixer2.gain(2, 1);
-  mixer2.gain(3, 1);
-  mixer3.gain(0, 1);
-  mixer3.gain(1, 1);
-  mixer3.gain(2, 1);
-  mixer3.gain(3, 1);
-  mixer4.gain(0, 1);
-  mixer4.gain(1, 1);
-  mixer4.gain(2, 1);
-  mixer4.gain(3, 1);
-
-
-
-
+  initializeMixers();
 
 }
 
