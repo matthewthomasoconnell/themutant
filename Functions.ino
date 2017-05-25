@@ -46,61 +46,35 @@ void flashRebootLights(int speed) {
 
 
 void initializeMixers() {
-  mixer1.gain(0, 1);
-  mixer1.gain(1, 1);
-  mixer1.gain(2, 1);
-  mixer1.gain(3, 1);
-  mixer2.gain(0, 1);
-  mixer2.gain(1, 1);
-  mixer2.gain(2, 1);
-  mixer2.gain(3, 1);
-  mixer3.gain(0, 1);
-  mixer3.gain(1, 1);
-  mixer3.gain(2, 1);
-  mixer3.gain(3, 1);
-  mixer4.gain(0, 1);
-  mixer4.gain(1, 1);
-  mixer4.gain(2, 1);
-  mixer4.gain(3, 1);
+
+   voice1mix.gain(0,.5);
+   voice1mix.gain(1,.5);
+   voice1mix.gain(2,.5);
+
+}
+
+void testTone() {
+
 }
 
 
+
 void initalizeOscillators() {
-  waveform1.begin( WAVEFORM_SINE );
-  waveform1.frequency( 440 );
-  waveform1.amplitude(0.5);
-  waveform1.pulseWidth(0.50);
-  
-  waveform2.amplitude(0.5);
-  waveform2.pulseWidth(0.50);
-  
-  waveform3.amplitude(0.5);
-  waveform3.pulseWidth(0.50);
-  
-  waveform4.amplitude(0.5);
-  waveform4.pulseWidth(0.50);
-
-  envelope1.sustain(1);
-  envelope2.sustain(1);
-  envelope3.sustain(1);
-  envelope4.sustain(1);
-  
-  envelope1.attack(200);
-  envelope2.attack(200);
-  envelope3.attack(200);
-  envelope4.attack(200);
-  
-  envelope1.release(200);
-  envelope2.release(200);
-  envelope3.release(200);
-  envelope4.release(200);
-
+  voice1a.begin(.3,445,WAVEFORM_SQUARE);
+  voice1b.begin(.3,440,WAVEFORM_SAWTOOTH);
 }
 
 
 
 float calculateOscillatorInterval(int sliderValue) {
+   return 10.50;
 //  return mapfloat(sliderValue, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
 }
 
+
+
+// This is a homemade function to map to floating point numbers.
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
