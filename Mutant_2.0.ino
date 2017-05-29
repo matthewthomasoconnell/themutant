@@ -3,47 +3,39 @@
 #include <SPI.h>
 #include <Bounce.h>
 
-
 // GUItool: begin automatically generated code
-AudioSynthNoiseWhite     voice4n;         //xy=164.5,960.75
-AudioSynthWaveform       voice4b;      //xy=165.75,916.75
-AudioSynthWaveform       voice4a;      //xy=166,875.5
-AudioSynthWaveform       voice3b;      //xy=168,737.25
-AudioSynthWaveform       voice3a;      //xy=168.5,695.5
-AudioSynthNoiseWhite     voice3n;         //xy=169,779.75
-AudioSynthWaveform       voice1a;        //xy=171.00000381469727,338.6666564941406
-AudioSynthNoiseWhite     voice2n;         //xy=170.75,592.5
-AudioSynthNoiseWhite     voice1n;        //xy=171.5,414.4166564941406
-AudioSynthWaveform       voice2b;      //xy=171.5,555
-AudioSynthWaveform       voice1b;        //xy=172.25000381469727,375.4166564941406
-AudioSynthWaveform       voice2a;      //xy=172,515.5000057220459
-AudioSynthWaveformDc     voice4filterenv;            //xy=304,1002
-AudioSynthWaveformDc     voice2filterenv;            //xy=309,638
-AudioSynthWaveformDc     voice3filterenv;            //xy=310,823.0000057220459
-AudioSynthWaveformDc     voice4env;            //xy=317,955
-AudioMixer4              voice4mix;         //xy=317.25,896.5
-AudioSynthWaveformDc     voice1env;      //xy=320.00000381469727,416.66665840148926
-AudioMixer4              voice1mix;      //xy=320.25,360.4166564941406
-AudioSynthWaveformDc     voice1filterenv;            //xy=320,463
-AudioMixer4              voice2mix;         //xy=320.25,535.5
-AudioSynthWaveformDc     voice2env;            //xy=320.5,595.25
-AudioMixer4              voice3mix;         //xy=320.5,720.25
-AudioSynthWaveformDc     voice3env;            //xy=321.75,780.25
-AudioEffectMultiply      voice4multiply;      //xy=475.25,917.25
-AudioEffectMultiply      voice2multiply;      //xy=493.75,558.25
-AudioEffectMultiply      voice1multiply; //xy=495.25,388.4166564941406
-AudioEffectMultiply      voice3multiply;      //xy=497,737.75
-AudioFilterStateVariable voice1filter;        //xy=658,390
-AudioFilterStateVariable voice3filter;        //xy=661,763.0000057220459
-AudioFilterStateVariable voice4filter;        //xy=661,922
-AudioFilterStateVariable voice2filter;        //xy=665,575
-AudioMixer4              mastermix;         //xy=864,663.75
-AudioOutputI2S           i2s1;           //xy=1044.5,668.9166870117188
+AudioSynthNoiseWhite     voice4n;        //xy=248.75,720.75
+AudioSynthWaveform       voice4b;        //xy=249.75,676.75
+AudioSynthWaveform       voice4a;        //xy=250.75,635.75
+AudioSynthWaveform       voice3a;        //xy=252.75,455.75
+AudioSynthWaveform       voice3b;        //xy=252.75,497.75
+AudioSynthNoiseWhite     voice3n;        //xy=253.75,539.75
+AudioSynthWaveform       voice1a;        //xy=255.75,98.75
+AudioSynthNoiseWhite     voice2n;        //xy=254.75,352.75
+AudioSynthNoiseWhite     voice1n;        //xy=255.75,174.75
+AudioSynthWaveform       voice2b;        //xy=255.75,315.75
+AudioSynthWaveform       voice1b;        //xy=256.75,135.75
+AudioSynthWaveform       voice2a;        //xy=256.75,275.75
+AudioSynthWaveformDc     voice4env;      //xy=401.75,715.75
+AudioMixer4              voice1mix;      //xy=404.75,120.75
+AudioSynthWaveformDc     voice1env;      //xy=404.75,176.75
+AudioMixer4              voice2mix;      //xy=404.75,295.75
+AudioSynthWaveformDc     voice2env;      //xy=404.75,355.75
+AudioMixer4              voice4mix;      //xy=403.75,656.75
+AudioMixer4              voice3mix;      //xy=404.75,480.75
+AudioSynthWaveformDc     voice3env;      //xy=405.75,540.75
+AudioEffectMultiply      voice4multiply; //xy=559.75,677.75
+AudioEffectMultiply      voice1multiply; //xy=577.75,130.75
+AudioEffectMultiply      voice2multiply; //xy=577.75,318.75
+AudioEffectMultiply      voice3multiply; //xy=581.75,497.75
+AudioMixer4              mastermix;      //xy=794.75,431.75
+AudioFilterStateVariable filter1;        //xy=970.0000152587891,435.0000057220459
+AudioOutputI2S           i2s1;           //xy=1157.500015258789,440.2500057220459
 AudioConnection          patchCord1(voice4n, 0, voice4mix, 2);
 AudioConnection          patchCord2(voice4b, 0, voice4mix, 1);
 AudioConnection          patchCord3(voice4a, 0, voice4mix, 0);
-AudioConnection          patchCord4(voice3b, 0, voice3mix, 1);
-AudioConnection          patchCord5(voice3a, 0, voice3mix, 0);
+AudioConnection          patchCord4(voice3a, 0, voice3mix, 0);
+AudioConnection          patchCord5(voice3b, 0, voice3mix, 1);
 AudioConnection          patchCord6(voice3n, 0, voice3mix, 2);
 AudioConnection          patchCord7(voice1a, 0, voice1mix, 0);
 AudioConnection          patchCord8(voice2n, 0, voice2mix, 2);
@@ -51,29 +43,26 @@ AudioConnection          patchCord9(voice1n, 0, voice1mix, 2);
 AudioConnection          patchCord10(voice2b, 0, voice2mix, 1);
 AudioConnection          patchCord11(voice1b, 0, voice1mix, 1);
 AudioConnection          patchCord12(voice2a, 0, voice2mix, 0);
-AudioConnection          patchCord13(voice4filterenv, 0, voice4filter, 1);
-AudioConnection          patchCord14(voice2filterenv, 0, voice2filter, 1);
-AudioConnection          patchCord15(voice3filterenv, 0, voice3filter, 1);
-AudioConnection          patchCord16(voice4env, 0, voice4multiply, 1);
-AudioConnection          patchCord17(voice4mix, 0, voice4multiply, 0);
-AudioConnection          patchCord18(voice1env, 0, voice1multiply, 1);
-AudioConnection          patchCord19(voice1mix, 0, voice1multiply, 0);
-AudioConnection          patchCord20(voice1filterenv, 0, voice1filter, 1);
-AudioConnection          patchCord21(voice2mix, 0, voice2multiply, 0);
-AudioConnection          patchCord22(voice2env, 0, voice2multiply, 1);
-AudioConnection          patchCord23(voice3mix, 0, voice3multiply, 0);
-AudioConnection          patchCord24(voice3env, 0, voice3multiply, 1);
-AudioConnection          patchCord25(voice4multiply, 0, voice4filter, 0);
-AudioConnection          patchCord26(voice2multiply, 0, voice2filter, 0);
-AudioConnection          patchCord27(voice1multiply, 0, voice1filter, 0);
-AudioConnection          patchCord28(voice3multiply, 0, voice3filter, 0);
-AudioConnection          patchCord29(voice1filter, 0, mastermix, 0);
-AudioConnection          patchCord30(voice3filter, 0, mastermix, 2);
-AudioConnection          patchCord31(voice4filter, 0, mastermix, 3);
-AudioConnection          patchCord32(voice2filter, 0, mastermix, 1);
-AudioConnection          patchCord33(mastermix, 0, i2s1, 0);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1039.5,613.6666870117188
+AudioConnection          patchCord13(voice4env, 0, voice4multiply, 1);
+AudioConnection          patchCord14(voice1mix, 0, voice1multiply, 0);
+AudioConnection          patchCord15(voice1env, 0, voice1multiply, 1);
+AudioConnection          patchCord16(voice2mix, 0, voice2multiply, 0);
+AudioConnection          patchCord17(voice2env, 0, voice2multiply, 1);
+AudioConnection          patchCord18(voice4mix, 0, voice4multiply, 0);
+AudioConnection          patchCord19(voice3mix, 0, voice3multiply, 0);
+AudioConnection          patchCord20(voice3env, 0, voice3multiply, 1);
+AudioConnection          patchCord21(voice4multiply, 0, mastermix, 3);
+AudioConnection          patchCord22(voice1multiply, 0, mastermix, 0);
+AudioConnection          patchCord23(voice2multiply, 0, mastermix, 1);
+AudioConnection          patchCord24(voice3multiply, 0, mastermix, 2);
+AudioConnection          patchCord25(mastermix, 0, filter1, 0);
+AudioConnection          patchCord26(filter1, 0, i2s1, 0);
+AudioControlSGTL5000     sgtl5000_1;     //xy=1147.500015258789,398.2500057220459
 // GUItool: end automatically generated code
+
+
+
+
 
 
 
@@ -90,13 +79,15 @@ const int SLIDER1 = A15;
 const int SLIDER2 = A14;
 const int SLIDER3 = A12;
 const int SLIDER4 = A13;
+const int FOOTPEDAL = A20;
 const int SWITCHLEFTBOTTOM = 30;
 const int SWITCHLEFTMIDDLE = 29;
 const int SWITCHLEFTTOP = 7;
 const int SWITCHRIGHTBOTTOM = 28;
 const int SWITCHRIGHTMIDDLE = 27;
 const int SWITCHRIGHTTOP = 26;
-int knob1, knob2, knob3, knob4, knob5, knob6, knob7;
+int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
+
 
 
 
@@ -111,6 +102,15 @@ Bounce noteBounce[] = {
   Bounce(notePins[2],10),
   Bounce(notePins[3],10)
 };
+
+// Effects Constants
+const int TREMOLO = 0;
+const int WARBLE = 1;
+const int DELAY = 2;
+const int BELLOWS = 3;
+
+
+
 
 // Initialize Rotary Switches
 const int ROTARY_REFRESH_RATE = 50;
@@ -127,13 +127,14 @@ int oscillator_interval = 5; // in half steps (5 => 4ths, 7 => 5ths)
 int slider1, slider2, slider3, slider4;
 
 // Initialize the Tonebank variables
-const int tonebank[6][2] = {  
-   {WAVEFORM_SINE, WAVEFORM_SINE},
-   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH},
-   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH_REVERSE},
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SQUARE},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE} 
+// I'd like to put volume, octave, and other variables in here for more consistency
+const int tonebank[6][3] = {  
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, TREMOLO},
+   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH, WARBLE},
+   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH_REVERSE, TREMOLO},
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, BELLOWS},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SQUARE, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, DELAY} 
 };
 int oldTonebankNumber, tonebankNumber, voiceaWaveform, voicebWaveform;
 
@@ -149,19 +150,26 @@ float sustainLevel;
 bool noteTrigFlag[4];
 unsigned long attackWait[4];
 int oldNoiseLevel, oldFilterFrequency;
+float oscillatorDetuneAmount;
 
 
 
 void setup() {
+
   initializePins();
   flashRebootLights(60);
 
   initializeTeensyAudio();
   initializeOscillators();
   initializeMixers();
+
+  filter1.frequency(20000);
+  filter1.resonance(2);
+
 }
 
 void loop() {
+  
   updateKnobs(); // 7 Rotary Pots
   updateSliders(); // 4 Slider Pots
   updateTranspose(); // Left Rotary Switch
@@ -169,6 +177,11 @@ void loop() {
   updateDroneMode(); // Left Toggle Switch
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
+
+  
+
+
+  
 }
 
 

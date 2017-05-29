@@ -65,32 +65,30 @@ void initializeOscillators() {
 
   voice4a.begin(.3,1,WAVEFORM_SQUARE);
   voice4b.begin(.3,1,WAVEFORM_SQUARE);
-
-
 }
 
 // Turn on the Mixers
 void initializeMixers() {
-  voice1mix.gain(0,.5);
-  voice1mix.gain(1,.5);
-  voice1mix.gain(2,.5);
+  voice1mix.gain(0,.33);
+  voice1mix.gain(1,.33);
+  voice1mix.gain(2,.33);
 
-  voice2mix.gain(0,.5);
-  voice2mix.gain(1,.5);
-  voice2mix.gain(2,.5);
+  voice2mix.gain(0,.33);
+  voice2mix.gain(1,.33);
+  voice2mix.gain(2,.33);
 
-  voice3mix.gain(0,.5);
-  voice3mix.gain(1,.5);
-  voice3mix.gain(2,.5);
+  voice3mix.gain(0,.33);
+  voice3mix.gain(1,.33);
+  voice3mix.gain(2,.33);
 
-  voice4mix.gain(0,.5);
-  voice4mix.gain(1,.5);
-  voice4mix.gain(2,.5);
+  voice4mix.gain(0,.33);
+  voice4mix.gain(1,.33);
+  voice4mix.gain(2,.33);
 
-  mastermix.gain(0,.5);
-  mastermix.gain(1,.5);
-  mastermix.gain(2,.5);
-  mastermix.gain(3,.5);
+  mastermix.gain(0,.25);
+  mastermix.gain(1,.25);
+  mastermix.gain(2,.25);
+  mastermix.gain(3,.25);
 }
 
 
@@ -99,16 +97,16 @@ void startNote(int i) {
   noteTrigFlag[i] = false;
 
   if (i == 0) {
-    voice1filterenv.amplitude(-1, releaseTime);
+//    voice1filterenv.amplitude(-1, releaseTime);
     voice1env.amplitude(0,releaseTime);
   } else if (i == 1) {
-    voice2filterenv.amplitude(-1, releaseTime);
+//    voice2filterenv.amplitude(-1, releaseTime);
     voice2env.amplitude(0,releaseTime);
   } else if (i == 2) {
-    voice3filterenv.amplitude(-1, releaseTime);
+//    voice3filterenv.amplitude(-1, releaseTime);
     voice3env.amplitude(0,releaseTime);
   } else if (i == 3) {
-    voice4filterenv.amplitude(-1, releaseTime);
+//    voice4filterenv.amplitude(-1, releaseTime);
     voice4env.amplitude(0,releaseTime);
   }   
 }
@@ -118,16 +116,16 @@ void stopNote(int i) {
   attackWait[i] = millis();
 
   if (i == 0) {
-    voice1filterenv.amplitude(1,attackTime);
+//    voice1filterenv.amplitude(1,attackTime);
     voice1env.amplitude(1,attackTime);
   } else if (i == 1) {
-    voice2filterenv.amplitude(1,attackTime);
+//    voice2filterenv.amplitude(1,attackTime);
     voice2env.amplitude(1,attackTime);
   } else if (i == 2) {
-    voice3filterenv.amplitude(1,attackTime);
+//    voice3filterenv.amplitude(1,attackTime);
     voice3env.amplitude(1,attackTime);
   } else if (i == 3) {
-    voice4filterenv.amplitude(1,attackTime);
+//    voice4filterenv.amplitude(1,attackTime);
     voice4env.amplitude(1,attackTime);
   }   
 }
@@ -140,35 +138,45 @@ void updateKnobs() {
   knob5 = analogRead(KNOB5);
   knob6 = analogRead(KNOB6);
   knob7 = analogRead(KNOB7);
+  footpedal = analogRead(FOOTPEDAL);
 
 
-//  updateFilter(knob1);
-  updateNoise(knob2);
-
-
-}
-
-
-void updateFilter(int filterFrequency) {
-  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
-
-    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
+  updateMasterFilter(knob1); // This is causing major glitches
+  updateNoise(knob4);
+  updateOscillatorRatio(knob5);
+  updateOscillatorDetune(knob6, footpedal);
   
-    Serial.println(filterFrequencyMapped);
-    
-    voice1filter.frequency(filterFrequencyMapped);
-    voice2filter.frequency(filterFrequencyMapped);
-    voice3filter.frequency(filterFrequencyMapped);
-    voice4filter.frequency(filterFrequencyMapped);
-
-    oldFilterFrequency = filterFrequency;
-  }
-
 }
+
+void updateOscillatorDetune(int knobValue, int footpedal){
+  oscillatorDetuneAmount = mapfloat(knobValue, 0, 1023, -1, 1);
+  float footpedalAmount = mapfloat(footpedal, 0, 1023, -.025, .025);
+  
+  oscillatorDetuneAmount = oscillatorDetuneAmount + footpedalAmount;
+
+  Serial.println(oscillatorDetuneAmount);
+}
+
+
+void updateOscillatorRatio(int knobValue){
+  float voiceaAmplitude = mapfloat(knobValue, 0, 1023, 0, 1);
+  float voicebAmplitude = 1 - voiceaAmplitude;
+  
+  voice1a.amplitude(voiceaAmplitude);
+  voice2a.amplitude(voiceaAmplitude);
+  voice3a.amplitude(voiceaAmplitude);
+  voice4a.amplitude(voiceaAmplitude);
+
+  voice1b.amplitude(voicebAmplitude);
+  voice2b.amplitude(voicebAmplitude);
+  voice3b.amplitude(voicebAmplitude);
+  voice4b.amplitude(voicebAmplitude);
+}
+
 
 void updateNoise(int noiseLevel) {
   if (noiseLevel != oldNoiseLevel) {
-    float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .3);
+    float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
     
 //    Serial.println(noiseLevelMapped);
   
@@ -200,10 +208,21 @@ void updateSliders() {
   voice3a.frequency(osc3freq);
   voice4a.frequency(osc4freq);
 
-  voice1b.frequency(osc1freq);
-  voice2b.frequency(osc2freq);
-  voice3b.frequency(osc3freq);
-  voice4b.frequency(osc4freq);
+//  Serial.println(oscillatorDetuneAmount);
+
+  if (oscillatorDetuneAmount >= 0) {
+    voice1b.frequency(osc1freq + oscillatorDetuneAmount * osc1freq);
+    voice2b.frequency(osc2freq + oscillatorDetuneAmount * osc2freq);
+    voice3b.frequency(osc3freq + oscillatorDetuneAmount * osc3freq);
+    voice4b.frequency(osc4freq + oscillatorDetuneAmount * osc4freq);
+  } else {
+    voice1b.frequency(osc1freq + (oscillatorDetuneAmount * osc1freq) / 2);
+    voice2b.frequency(osc2freq + (oscillatorDetuneAmount * osc2freq) / 2);
+    voice3b.frequency(osc3freq + (oscillatorDetuneAmount * osc3freq) / 2);
+    voice4b.frequency(osc4freq + (oscillatorDetuneAmount * osc4freq) / 2);
+  }
+
+
 }
 
 
@@ -295,6 +314,38 @@ void updateKeys() {
     }
     prevBtnState[i] = btnState[i];
   }
+}
+
+
+void updateMasterFilter(int filterFrequency) {
+
+  int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
+  filter1.frequency(filterFrequencyMapped);
+
+//  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
+//
+//    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
+//    masterfilter.frequency(filterFrequencyMapped);
+//    oldFilterFrequency = filterFrequency;
+//  }
+
+}
+
+
+void updateFilter(int filterFrequency) {
+//  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
+//
+//    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
+//  
+//    Serial.println(filterFrequencyMapped);
+//    
+//    voice1filter.frequency(filterFrequencyMapped);
+//    voice2filter.frequency(filterFrequencyMapped);
+//    voice3filter.frequency(filterFrequencyMapped);
+//    voice4filter.frequency(filterFrequencyMapped);
+//
+//    oldFilterFrequency = filterFrequency;
+//  }
 }
 
 
