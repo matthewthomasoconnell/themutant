@@ -68,7 +68,10 @@ void initializeOscillators() {
 }
 
 // Turn on the Mixers
-void initializeMixers() {
+void initializeMixersandFilters() {
+  masterFilter.frequency(20000);
+  masterFilter.resonance(1);
+  
   voice1mix.gain(0,.33);
   voice1mix.gain(1,.33);
   voice1mix.gain(2,.33);
@@ -320,7 +323,7 @@ void updateKeys() {
 void updateMasterFilter(int filterFrequency) {
 
   int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
-  filter1.frequency(filterFrequencyMapped);
+  masterFilter.frequency(filterFrequencyMapped);
 
 //  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
 //

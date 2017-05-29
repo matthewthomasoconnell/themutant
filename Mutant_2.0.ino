@@ -29,7 +29,7 @@ AudioEffectMultiply      voice1multiply; //xy=577.75,130.75
 AudioEffectMultiply      voice2multiply; //xy=577.75,318.75
 AudioEffectMultiply      voice3multiply; //xy=581.75,497.75
 AudioMixer4              mastermix;      //xy=794.75,431.75
-AudioFilterStateVariable filter1;        //xy=970.0000152587891,435.0000057220459
+AudioFilterStateVariable masterFilter;        //xy=970.0000152587891,435.0000057220459
 AudioOutputI2S           i2s1;           //xy=1157.500015258789,440.2500057220459
 AudioConnection          patchCord1(voice4n, 0, voice4mix, 2);
 AudioConnection          patchCord2(voice4b, 0, voice4mix, 1);
@@ -55,8 +55,8 @@ AudioConnection          patchCord21(voice4multiply, 0, mastermix, 3);
 AudioConnection          patchCord22(voice1multiply, 0, mastermix, 0);
 AudioConnection          patchCord23(voice2multiply, 0, mastermix, 1);
 AudioConnection          patchCord24(voice3multiply, 0, mastermix, 2);
-AudioConnection          patchCord25(mastermix, 0, filter1, 0);
-AudioConnection          patchCord26(filter1, 0, i2s1, 0);
+AudioConnection          patchCord25(mastermix, 0, masterFilter, 0);
+AudioConnection          patchCord26(masterFilter, 0, i2s1, 0);
 AudioControlSGTL5000     sgtl5000_1;     //xy=1147.500015258789,398.2500057220459
 // GUItool: end automatically generated code
 
@@ -161,10 +161,9 @@ void setup() {
 
   initializeTeensyAudio();
   initializeOscillators();
-  initializeMixers();
+  initializeMixersandFilters();
 
-  filter1.frequency(20000);
-  filter1.resonance(2);
+
 
 }
 
