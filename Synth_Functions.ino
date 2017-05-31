@@ -144,7 +144,7 @@ void updateKnobs() {
   footpedal = analogRead(FOOTPEDAL);
 
 
-  updateMasterFilter(knob1); // This is causing major glitches
+  updateMasterFilter(knob1, knob2); // This is causing major glitches
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6, footpedal);
@@ -180,9 +180,7 @@ void updateOscillatorRatio(int knobValue){
 void updateNoise(int noiseLevel) {
   if (noiseLevel != oldNoiseLevel) {
     float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
-    
-//    Serial.println(noiseLevelMapped);
-  
+      
     voice1n.amplitude(noiseLevelMapped);
     voice2n.amplitude(noiseLevelMapped);
     voice3n.amplitude(noiseLevelMapped);
@@ -191,8 +189,6 @@ void updateNoise(int noiseLevel) {
     oldNoiseLevel = noiseLevel;
   }
 }
-
-
 
 void updateSliders() {
   slider1 = analogRead(SLIDER1);
@@ -309,9 +305,9 @@ void updateKeys() {
   for(int i=0; i<4; i++){
     btnState[i] = digitalRead(notePins[i]);
     if (noteBounce[i].update()){
-        if (btnState[i] == LOW && prevBtnState[i] == HIGH){
+        if (noteBounce[i].fallingEdge()){
           startNote(i);
-        }else {
+        } else if(noteBounce[i].risingEdge()) {
           stopNote(i);
         }
     }
@@ -320,10 +316,13 @@ void updateKeys() {
 }
 
 
-void updateMasterFilter(int filterFrequency) {
+void updateMasterFilter(int filterFrequency, int filterResonance) {
 
   int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
   masterFilter.frequency(filterFrequencyMapped);
+
+  int filterResonanceMapped = mapfloat(filterResonance, 0, 1023, .7, 5);
+  masterFilter.resonance(filterResonanceMapped);
 
 //  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
 //

@@ -109,9 +109,6 @@ const int WARBLE = 1;
 const int DELAY = 2;
 const int BELLOWS = 3;
 
-
-
-
 // Initialize Rotary Switches
 const int ROTARY_REFRESH_RATE = 50;
 const int TONEBANK_ROTARY_PIN = A17;
@@ -162,9 +159,6 @@ void setup() {
   initializeTeensyAudio();
   initializeOscillators();
   initializeMixersandFilters();
-
-
-
 }
 
 void loop() {
@@ -177,10 +171,6 @@ void loop() {
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
 
-  
-
-
-  
 }
 
 
