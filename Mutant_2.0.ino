@@ -159,7 +159,10 @@ void setup() {
   initializeTeensyAudio();
   initializeOscillators();
   initializeMixersandFilters();
+<<<<<<< HEAD
   
+=======
+>>>>>>> 683a90af2f72f2b7f8d81a7b92bba90ce5e7ff20
 }
 
 void loop() {
@@ -171,8 +174,12 @@ void loop() {
   updateDroneMode(); // Left Toggle Switch
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
+<<<<<<< HEAD
   updateIndicators(); // 4 Indicator Leds
   
+=======
+
+>>>>>>> 683a90af2f72f2b7f8d81a7b92bba90ce5e7ff20
 }
 
 
