@@ -114,7 +114,6 @@ void startNote(int i) {
   }   
 }
 
-<<<<<<< HEAD
 void updateIndicators() {
   float envValue, writeValue;
   for(int i=0; i<4; i++){
@@ -132,8 +131,6 @@ void updateIndicators() {
   }
 }
 
-=======
->>>>>>> 683a90af2f72f2b7f8d81a7b92bba90ce5e7ff20
 void stopNote(int i) {  
   noteTrigFlag[i] = true;
   attackWait[i] = millis();
@@ -176,11 +173,7 @@ void updateOscillatorDetune(int knobValue, int footpedal){
   float footpedalAmount = mapfloat(footpedal, 0, 1023, -.025, .025);
   
   oscillatorDetuneAmount = oscillatorDetuneAmount + footpedalAmount;
-<<<<<<< HEAD
-=======
 
-  Serial.println(oscillatorDetuneAmount);
->>>>>>> 683a90af2f72f2b7f8d81a7b92bba90ce5e7ff20
 }
 
 
