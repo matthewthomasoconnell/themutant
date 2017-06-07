@@ -54,64 +54,63 @@ void flashRebootLights(int speed) {
 
 // Turn on the waveforms - This is arbitrary since it will be changed in the loop
 void initializeOscillators() {
-  voice1a.begin(.3,1,WAVEFORM_SQUARE);
-  voice1b.begin(.3,1,WAVEFORM_SQUARE);
+  voice1a.begin(1,1,WAVEFORM_SQUARE);
+  voice1b.begin(1,1,WAVEFORM_SQUARE);
 
-  voice2a.begin(.3,1,WAVEFORM_SQUARE);
-  voice2b.begin(.3,1,WAVEFORM_SQUARE);
+  voice2a.begin(1,1,WAVEFORM_SQUARE);
+  voice2b.begin(1,1,WAVEFORM_SQUARE);
 
-  voice3a.begin(.3,1,WAVEFORM_SQUARE);
-  voice3b.begin(.3,1,WAVEFORM_SQUARE);
+  voice3a.begin(1,1,WAVEFORM_SQUARE);
+  voice3b.begin(1,1,WAVEFORM_SQUARE);
 
-  voice4a.begin(.3,1,WAVEFORM_SQUARE);
-  voice4b.begin(.3,1,WAVEFORM_SQUARE);
+  voice4a.begin(1,1,WAVEFORM_SQUARE);
+  voice4b.begin(1,1,WAVEFORM_SQUARE);
+
+//  masterLFO.begin(1,1,WAVEFORM_SINE);
+  
 }
 
 // Turn on the Mixers
 void initializeMixersandFilters() {
-  masterFilter.frequency(20000);
-  masterFilter.resonance(1);
   
-  voice1mix.gain(0,.33);
-  voice1mix.gain(1,.33);
-  voice1mix.gain(2,.33);
+  voice1mix.gain(0,1);
+  voice1mix.gain(1,1);
+  voice1mix.gain(2,1);
 
-  voice2mix.gain(0,.33);
-  voice2mix.gain(1,.33);
-  voice2mix.gain(2,.33);
+  voice2mix.gain(0,1);
+  voice2mix.gain(1,1);
+  voice2mix.gain(2,1);
 
-  voice3mix.gain(0,.33);
-  voice3mix.gain(1,.33);
-  voice3mix.gain(2,.33);
+  voice3mix.gain(0,1);
+  voice3mix.gain(1,1);
+  voice3mix.gain(2,1);
 
-  voice4mix.gain(0,.33);
-  voice4mix.gain(1,.33);
-  voice4mix.gain(2,.33);
+  voice4mix.gain(0,1);
+  voice4mix.gain(1,1);
+  voice4mix.gain(2,1);
 
-  mastermix.gain(0,.25);
-  mastermix.gain(1,.25);
-  mastermix.gain(2,.25);
-  mastermix.gain(3,.25);
-}
+  oscillatorMixer.gain(0,1);
+  oscillatorMixer.gain(1,1);
+  oscillatorMixer.gain(2,1);
+  oscillatorMixer.gain(3,1);
 
+  voice1filterModMixer.gain(0,1);
+  voice1filterModMixer.gain(1,0);
+  voice2filterModMixer.gain(0,1);
+  voice2filterModMixer.gain(1,0);
+  voice3filterModMixer.gain(0,1);
+  voice3filterModMixer.gain(1,0);
+  voice4filterModMixer.gain(0,1);
+  voice4filterModMixer.gain(1,0);
 
+  masterMixer.gain(0,1);
+  masterMixer.gain(3,1); 
 
-void startNote(int i) {
-  noteTrigFlag[i] = false;
+  delayFilter.frequency(1000);
+  delayFilter.resonance(2);
 
-  if (i == 0) {
-//    voice1filterenv.amplitude(-1, releaseTime);
-    voice1env.amplitude(0,releaseTime);
-  } else if (i == 1) {
-//    voice2filterenv.amplitude(-1, releaseTime);
-    voice2env.amplitude(0,releaseTime);
-  } else if (i == 2) {
-//    voice3filterenv.amplitude(-1, releaseTime);
-    voice3env.amplitude(0,releaseTime);
-  } else if (i == 3) {
-//    voice4filterenv.amplitude(-1, releaseTime);
-    voice4env.amplitude(0,releaseTime);
-  }   
+  masterDelay.delay(0, 500);
+
 }
 
 void updateIndicators() {
@@ -131,22 +130,39 @@ void updateIndicators() {
   }
 }
 
+void startNote(int i) {
+  noteTrigFlag[i] = false;
+
+  if (i == 0) {
+    voice1filterenv.amplitude(-1, filterAttackTime);
+    voice1env.amplitude(0,attackTime);
+  } else if (i == 1) {
+    voice2filterenv.amplitude(-1, filterAttackTime);
+    voice2env.amplitude(0,attackTime);
+  } else if (i == 2) {
+    voice3filterenv.amplitude(-1, filterAttackTime);
+    voice3env.amplitude(0,attackTime);
+  } else if (i == 3) {
+    voice4filterenv.amplitude(-1, filterAttackTime);
+    voice4env.amplitude(0,attackTime);
+  }   
+}
+
 void stopNote(int i) {  
   noteTrigFlag[i] = true;
   attackWait[i] = millis();
-
   if (i == 0) {
-//    voice1filterenv.amplitude(1,attackTime);
-    voice1env.amplitude(1,attackTime);
+    voice1filterenv.amplitude(1,filterReleaseTime);
+    voice1env.amplitude(1,releaseTime);
   } else if (i == 1) {
-//    voice2filterenv.amplitude(1,attackTime);
-    voice2env.amplitude(1,attackTime);
+    voice2filterenv.amplitude(1,filterReleaseTime);
+    voice2env.amplitude(1,releaseTime);
   } else if (i == 2) {
-//    voice3filterenv.amplitude(1,attackTime);
-    voice3env.amplitude(1,attackTime);
+    voice3filterenv.amplitude(1,filterReleaseTime);
+    voice3env.amplitude(1,releaseTime);
   } else if (i == 3) {
-//    voice4filterenv.amplitude(1,attackTime);
-    voice4env.amplitude(1,attackTime);
+    voice4filterenv.amplitude(1,filterReleaseTime);
+    voice4env.amplitude(1,releaseTime);
   }   
 }
 
@@ -161,7 +177,7 @@ void updateKnobs() {
   footpedal = analogRead(FOOTPEDAL);
 
 
-  updateMasterFilter(knob1, knob2); // This is causing major glitches
+  updateFilters(knob1, knob2); // This is causing major glitches
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6, footpedal);
@@ -173,7 +189,6 @@ void updateOscillatorDetune(int knobValue, int footpedal){
   float footpedalAmount = mapfloat(footpedal, 0, 1023, -.025, .025);
   
   oscillatorDetuneAmount = oscillatorDetuneAmount + footpedalAmount;
-
 }
 
 
@@ -194,7 +209,6 @@ void updateOscillatorRatio(int knobValue){
 
 
 void updateNoise(int noiseLevel) {
-  if (noiseLevel != oldNoiseLevel) {
     float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
       
     voice1n.amplitude(noiseLevelMapped);
@@ -202,8 +216,6 @@ void updateNoise(int noiseLevel) {
     voice3n.amplitude(noiseLevelMapped);
     voice4n.amplitude(noiseLevelMapped);
     
-    oldNoiseLevel = noiseLevel;
-  }
 }
 
 void updateSliders() {
@@ -285,20 +297,20 @@ void updateTranspose() {
 
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
-    attackTime = 100;
-    decayTime = 100;
-    sustainLevel = 1;
-    releaseTime = 200;
+    attackTime = 1000;
+    releaseTime = 1000;
+    filterAttackTime = 500;
+    filterReleaseTime = 500;
   } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 100;
-    decayTime = 100;
-    sustainLevel = 1;
-    releaseTime = 1500;  
+    attackTime = 1500;
+    releaseTime = 2000;
+    filterAttackTime = 500;
+    filterReleaseTime = 500;
   } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
     attackTime = 1000;
-    decayTime = 100;
-    sustainLevel = 1;
-    releaseTime = 3000; 
+    releaseTime = 2000;
+    filterAttackTime = 300;
+    filterReleaseTime = 300; 
   }
 }
 
@@ -332,38 +344,20 @@ void updateKeys() {
 }
 
 
-void updateMasterFilter(int filterFrequency, int filterResonance) {
+void updateFilters(int filterFrequency, int filterResonance) {
 
-  int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
-  masterFilter.frequency(filterFrequencyMapped);
+    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
+    int filterResonanceMapped = mapfloat(filterResonance, 0, 1023, 1, 5);
+  
+    voice1filter.frequency(filterFrequencyMapped);
+    voice2filter.frequency(filterFrequencyMapped);
+    voice3filter.frequency(filterFrequencyMapped);
+    voice4filter.frequency(filterFrequencyMapped);
 
-  int filterResonanceMapped = mapfloat(filterResonance, 0, 1023, .7, 5);
-  masterFilter.resonance(filterResonanceMapped);
-
-//  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
-//
-//    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
-//    masterfilter.frequency(filterFrequencyMapped);
-//    oldFilterFrequency = filterFrequency;
-//  }
-
-}
-
-
-void updateFilter(int filterFrequency) {
-//  if (filterFrequency > oldFilterFrequency + 20 || filterFrequency < oldFilterFrequency - 20) {
-//
-//    int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
-//  
-//    Serial.println(filterFrequencyMapped);
-//    
-//    voice1filter.frequency(filterFrequencyMapped);
-//    voice2filter.frequency(filterFrequencyMapped);
-//    voice3filter.frequency(filterFrequencyMapped);
-//    voice4filter.frequency(filterFrequencyMapped);
-//
-//    oldFilterFrequency = filterFrequency;
-//  }
+    voice1filter.resonance(filterResonanceMapped);
+    voice2filter.resonance(filterResonanceMapped);
+    voice3filter.resonance(filterResonanceMapped);
+    voice4filter.resonance(filterResonanceMapped);
 }
 
 

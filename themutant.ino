@@ -1,70 +1,98 @@
 #include <Audio.h>
 #include <Wire.h>
-#include <SPI.h>
 #include <Bounce.h>
 
 // GUItool: begin automatically generated code
-AudioSynthNoiseWhite     voice4n;        //xy=248.75,720.75
-AudioSynthWaveform       voice4b;        //xy=249.75,676.75
-AudioSynthWaveform       voice4a;        //xy=250.75,635.75
-AudioSynthWaveform       voice3a;        //xy=252.75,455.75
-AudioSynthWaveform       voice3b;        //xy=252.75,497.75
-AudioSynthNoiseWhite     voice3n;        //xy=253.75,539.75
-AudioSynthWaveform       voice1a;        //xy=255.75,98.75
-AudioSynthNoiseWhite     voice2n;        //xy=254.75,352.75
-AudioSynthNoiseWhite     voice1n;        //xy=255.75,174.75
-AudioSynthWaveform       voice2b;        //xy=255.75,315.75
-AudioSynthWaveform       voice1b;        //xy=256.75,135.75
-AudioSynthWaveform       voice2a;        //xy=256.75,275.75
-AudioSynthWaveformDc     voice4env;      //xy=401.75,715.75
-AudioMixer4              voice1mix;      //xy=404.75,120.75
-AudioSynthWaveformDc     voice1env;      //xy=404.75,176.75
-AudioMixer4              voice2mix;      //xy=404.75,295.75
-AudioSynthWaveformDc     voice2env;      //xy=404.75,355.75
-AudioMixer4              voice4mix;      //xy=403.75,656.75
-AudioMixer4              voice3mix;      //xy=404.75,480.75
-AudioSynthWaveformDc     voice3env;      //xy=405.75,540.75
-AudioEffectMultiply      voice4multiply; //xy=559.75,677.75
-AudioEffectMultiply      voice1multiply; //xy=577.75,130.75
-AudioEffectMultiply      voice2multiply; //xy=577.75,318.75
-AudioEffectMultiply      voice3multiply; //xy=581.75,497.75
-AudioMixer4              mastermix;      //xy=794.75,431.75
-AudioFilterStateVariable masterFilter;        //xy=970.0000152587891,435.0000057220459
-AudioOutputI2S           i2s1;           //xy=1157.500015258789,440.2500057220459
-AudioConnection          patchCord1(voice4n, 0, voice4mix, 2);
-AudioConnection          patchCord2(voice4b, 0, voice4mix, 1);
-AudioConnection          patchCord3(voice4a, 0, voice4mix, 0);
+AudioSynthNoiseWhite     voice2n;        //xy=284,645.6666870117188
+AudioSynthWaveform       voice1a;        //xy=285,411
+AudioSynthNoiseWhite     voice1n;        //xy=285,487
+AudioSynthWaveform       voice3a;        //xy=284,737.3333435058594
+AudioSynthWaveform       voice3b;        //xy=284,779.3333435058594
+AudioSynthWaveform       voice2b;        //xy=285,608.6666870117188
+AudioSynthWaveform       voice1b;        //xy=286,448
+AudioSynthWaveform       voice2a;        //xy=286,568.6666870117188
+AudioSynthNoiseWhite     voice3n;        //xy=285,821.3333435058594
+AudioSynthNoiseWhite     voice4n;        //xy=284.6666564941406,1042.1429026126862
+AudioSynthWaveform       voice4b;        //xy=285.6666564941406,998.1429026126862
+AudioSynthWaveform       voice4a;        //xy=286.6666564941406,957.1429026126862
+AudioMixer4              voice1mix;      //xy=434,433
+AudioSynthWaveformDc     voice1env;      //xy=434,489
+AudioMixer4              voice2mix;      //xy=434,588.6666870117188
+AudioSynthWaveformDc     voice2env;      //xy=434,648.6666870117188
+AudioMixer4              voice3mix;      //xy=436,762.3333435058594
+AudioSynthWaveformDc     voice3env;      //xy=437,822.3333435058594
+AudioSynthWaveformDc     voice4env;      //xy=437.6666564941406,1037.1429026126862
+AudioMixer4              voice4mix;      //xy=439.6666564941406,978.1429026126862
+AudioEffectMultiply      voice4multiply; //xy=626.2380790710449,1008.0000705718994
+AudioSynthWaveformDc     voice4filterenv; //xy=628.2380790710449,1042.0000705718994
+AudioEffectMultiply      voice3multiply; //xy=633.9999771118164,806.3333549499512
+AudioSynthWaveformDc     voice3filterenv; //xy=636.9999771118164,840.3333549499512
+AudioMixer4              voice3filterModMixer;         //xy=638.0951919555664,894.0952186584473
+AudioMixer4              voice4filterModMixer;         //xy=639.3650512695312,1092.03173828125
+AudioEffectMultiply      voice1multiply; //xy=645.6666870117188,431.22224283218384
+AudioSynthWaveformDc     voice1filterenv; //xy=646.6666870117188,468.22224283218384
+AudioMixer4              voice1filterModMixer;         //xy=647.2221984863281,522.825439453125
+AudioEffectMultiply      voice2multiply; //xy=648.9999771118164,627.6666984558105
+AudioSynthWaveformDc     voice2filterenv; //xy=650.9999771118164,665.6666984558105
+AudioSynthWaveform       masterLFO;      //xy=654.0477142333984,383.3333110809326
+AudioMixer4              voice2filterModMixer;         //xy=655.3174133300781,718.2221984863281
+AudioFilterStateVariable voice1filter;   //xy=894,462
+AudioFilterStateVariable voice2filter;   //xy=899,630.6666870117188
+AudioFilterStateVariable voice3filter;   //xy=902,807.3333435058594
+AudioFilterStateVariable voice4filter;   //xy=905.6666641235352,977.0000553131104
+AudioMixer4              oscillatorMixer;      //xy=1113.6667098999023,473.3333306312561
+AudioMixer4              masterMixer;         //xy=1118.4166717529297,545.4999809265137
+AudioEffectDelay         masterDelay;         //xy=1119.6666717529297,715.3333435058594
+AudioFilterStateVariable delayFilter;        //xy=1131.2500457763672,617.5000247955322
+AudioOutputI2S           i2s1;           //xy=1362.5000534057617,645.1666922569275
+AudioConnection          patchCord1(voice2n, 0, voice2mix, 2);
+AudioConnection          patchCord2(voice1a, 0, voice1mix, 0);
+AudioConnection          patchCord3(voice1n, 0, voice1mix, 2);
 AudioConnection          patchCord4(voice3a, 0, voice3mix, 0);
 AudioConnection          patchCord5(voice3b, 0, voice3mix, 1);
-AudioConnection          patchCord6(voice3n, 0, voice3mix, 2);
-AudioConnection          patchCord7(voice1a, 0, voice1mix, 0);
-AudioConnection          patchCord8(voice2n, 0, voice2mix, 2);
-AudioConnection          patchCord9(voice1n, 0, voice1mix, 2);
-AudioConnection          patchCord10(voice2b, 0, voice2mix, 1);
-AudioConnection          patchCord11(voice1b, 0, voice1mix, 1);
-AudioConnection          patchCord12(voice2a, 0, voice2mix, 0);
-AudioConnection          patchCord13(voice4env, 0, voice4multiply, 1);
-AudioConnection          patchCord14(voice1mix, 0, voice1multiply, 0);
-AudioConnection          patchCord15(voice1env, 0, voice1multiply, 1);
-AudioConnection          patchCord16(voice2mix, 0, voice2multiply, 0);
-AudioConnection          patchCord17(voice2env, 0, voice2multiply, 1);
-AudioConnection          patchCord18(voice4mix, 0, voice4multiply, 0);
-AudioConnection          patchCord19(voice3mix, 0, voice3multiply, 0);
-AudioConnection          patchCord20(voice3env, 0, voice3multiply, 1);
-AudioConnection          patchCord21(voice4multiply, 0, mastermix, 3);
-AudioConnection          patchCord22(voice1multiply, 0, mastermix, 0);
-AudioConnection          patchCord23(voice2multiply, 0, mastermix, 1);
-AudioConnection          patchCord24(voice3multiply, 0, mastermix, 2);
-AudioConnection          patchCord25(mastermix, 0, masterFilter, 0);
-AudioConnection          patchCord26(masterFilter, 0, i2s1, 0);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1147.500015258789,398.2500057220459
+AudioConnection          patchCord6(voice2b, 0, voice2mix, 1);
+AudioConnection          patchCord7(voice1b, 0, voice1mix, 1);
+AudioConnection          patchCord8(voice2a, 0, voice2mix, 0);
+AudioConnection          patchCord9(voice3n, 0, voice3mix, 2);
+AudioConnection          patchCord10(voice4n, 0, voice4mix, 2);
+AudioConnection          patchCord11(voice4b, 0, voice4mix, 1);
+AudioConnection          patchCord12(voice4a, 0, voice4mix, 0);
+AudioConnection          patchCord13(voice1mix, 0, voice1multiply, 0);
+AudioConnection          patchCord14(voice1env, 0, voice1multiply, 1);
+AudioConnection          patchCord15(voice2mix, 0, voice2multiply, 0);
+AudioConnection          patchCord16(voice2env, 0, voice2multiply, 1);
+AudioConnection          patchCord17(voice3mix, 0, voice3multiply, 0);
+AudioConnection          patchCord18(voice3env, 0, voice3multiply, 1);
+AudioConnection          patchCord19(voice4env, 0, voice4multiply, 1);
+AudioConnection          patchCord20(voice4mix, 0, voice4multiply, 0);
+AudioConnection          patchCord21(voice4multiply, 0, voice4filter, 0);
+AudioConnection          patchCord22(voice4filterenv, 0, voice4filterModMixer, 0);
+AudioConnection          patchCord23(voice3multiply, 0, voice3filter, 0);
+AudioConnection          patchCord24(voice3filterenv, 0, voice3filterModMixer, 0);
+AudioConnection          patchCord25(voice3filterModMixer, 0, voice3filter, 1);
+AudioConnection          patchCord26(voice4filterModMixer, 0, voice4filter, 1);
+AudioConnection          patchCord27(voice1multiply, 0, voice1filter, 0);
+AudioConnection          patchCord28(voice1filterenv, 0, voice1filterModMixer, 0);
+AudioConnection          patchCord29(voice1filterModMixer, 0, voice1filter, 1);
+AudioConnection          patchCord30(voice2multiply, 0, voice2filter, 0);
+AudioConnection          patchCord31(voice2filterenv, 0, voice2filterModMixer, 0);
+AudioConnection          patchCord32(masterLFO, 0, voice1filterModMixer, 1);
+AudioConnection          patchCord33(masterLFO, 0, voice2filterModMixer, 1);
+AudioConnection          patchCord34(masterLFO, 0, voice3filterModMixer, 1);
+AudioConnection          patchCord35(masterLFO, 0, voice4filterModMixer, 1);
+AudioConnection          patchCord36(voice2filterModMixer, 0, voice2filter, 1);
+AudioConnection          patchCord37(voice1filter, 0, oscillatorMixer, 0);
+AudioConnection          patchCord38(voice2filter, 0, oscillatorMixer, 1);
+AudioConnection          patchCord39(voice3filter, 0, oscillatorMixer, 2);
+AudioConnection          patchCord40(voice4filter, 0, oscillatorMixer, 3);
+AudioConnection          patchCord41(oscillatorMixer, 0, masterMixer, 0);
+AudioConnection          patchCord42(masterMixer, masterDelay);
+AudioConnection          patchCord43(masterMixer, 0, i2s1, 0);
+AudioConnection          patchCord44(masterMixer, 0, i2s1, 1);
+AudioConnection          patchCord45(masterDelay, 0, delayFilter, 0);
+AudioConnection          patchCord46(delayFilter, 0, masterMixer, 3);
+AudioControlSGTL5000     sgtl5000_1;     //xy=1353,689
 // GUItool: end automatically generated code
-
-
-
-
-
-
 
 
 // Sets constants for Knobs and Sliders
@@ -143,10 +171,11 @@ int oldScale = scales[0];
 // Initialize Envelope
 int droneMode;
 int attackTime, decayTime, releaseTime;
+int filterAttackTime, filterDecayTime, filterReleaseTime;
 float sustainLevel;
+float filterSustainLevel;
 bool noteTrigFlag[4];
 unsigned long attackWait[4];
-int oldNoiseLevel, oldFilterFrequency;
 float oscillatorDetuneAmount;
 
 
@@ -170,6 +199,7 @@ void loop() {
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
   updateIndicators(); // 4 Indicator Leds
+  
 }
 
 
