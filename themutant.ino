@@ -114,8 +114,28 @@ const int SWITCHLEFTTOP = 7;
 const int SWITCHRIGHTBOTTOM = 28;
 const int SWITCHRIGHTMIDDLE = 27;
 const int SWITCHRIGHTTOP = 26;
-int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
 
+// Effects Constants
+const int TREMOLO = 0;
+const int WARBLE = 1;
+const int DELAY = 2;
+const int BELLOWS = 3;
+
+const int TONEBANK[6][3] = {  
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, DELAY},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, TREMOLO},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, BELLOWS},
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WARBLE},
+   {WAVEFORM_SINE, WAVEFORM_SINE, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, WARBLE} 
+};
+
+// Tonebank Constants
+const int ORGAN = 0;
+const int LATCH = 1;
+const int TAMBOURA = 2;
+
+int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
 
 
 
@@ -131,11 +151,6 @@ Bounce noteBounce[] = {
   Bounce(notePins[3],10)
 };
 
-// Effects Constants
-const int TREMOLO = 0;
-const int WARBLE = 1;
-const int DELAY = 2;
-const int BELLOWS = 3;
 
 // Initialize Rotary Switches
 const int ROTARY_REFRESH_RATE = 50;
@@ -153,15 +168,10 @@ int slider1, slider2, slider3, slider4;
 
 // Initialize the Tonebank variables
 // I'd like to put volume, octave, and other variables in here for more consistency
-const int tonebank[6][3] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, TREMOLO},
-   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH, WARBLE},
-   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH_REVERSE, TREMOLO},
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, BELLOWS},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SQUARE, WARBLE},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, DELAY} 
-};
-int oldTonebankNumber, tonebankNumber, voiceaWaveform, voicebWaveform;
+int oldTonebankNumber, tonebankNumber, voiceaWaveform, voicebWaveform, tonebankEffect, lastToneBankEffect;
+float warbleAmount, bellowsAmount;
+
+
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
@@ -179,22 +189,29 @@ unsigned long attackWait[4];
 float oscillatorDetuneAmount;
 
 
+// Initialize "Bellows"
+const int lengthIntervalFilter = 30;
+unsigned beginningFilterInterval, currentMillis, bellowsPressureMapped;
+float currentBellowsPressure = 0;
+float lastBellowsPressure = 0;
+const float BELLOWS_RELEASE_CONSTANT = .04;
+const float BELLOWS_FILL_CONSTANT = .4;
+
 
 void setup() {
   initializePins();
-  flashRebootLights(60);
-
   initializeTeensyAudio();
   initializeOscillators();
   initializeMixersandFilters();
+  flashRebootLights(60);
 }
 
 void loop() {
   
+  updateTonebank(); // Right Rotary Switch
   updateKnobs(); // 7 Rotary Pots
   updateSliders(); // 4 Slider Pots
   updateTranspose(); // Left Rotary Switch
-  updateTonebank(); // Right Rotary Switch
   updateDroneMode(); // Left Toggle Switch
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches

@@ -66,33 +66,36 @@ void initializeOscillators() {
   voice4a.begin(1,1,WAVEFORM_SQUARE);
   voice4b.begin(1,1,WAVEFORM_SQUARE);
 
-//  masterLFO.begin(1,1,WAVEFORM_SINE);
+  masterLFO.begin(1,1,WAVEFORM_SINE);
+
+
+
   
 }
 
 // Turn on the Mixers
 void initializeMixersandFilters() {
   
-  voice1mix.gain(0,1);
-  voice1mix.gain(1,1);
-  voice1mix.gain(2,1);
+  voice1mix.gain(0,.33);
+  voice1mix.gain(1,.33);
+  voice1mix.gain(2,.33);
 
-  voice2mix.gain(0,1);
-  voice2mix.gain(1,1);
-  voice2mix.gain(2,1);
+  voice2mix.gain(0,.33);
+  voice2mix.gain(1,.33);
+  voice2mix.gain(2,.33);
 
-  voice3mix.gain(0,1);
-  voice3mix.gain(1,1);
-  voice3mix.gain(2,1);
+  voice3mix.gain(0,.33);
+  voice3mix.gain(1,.33);
+  voice3mix.gain(2,.33);
 
-  voice4mix.gain(0,1);
-  voice4mix.gain(1,1);
-  voice4mix.gain(2,1);
+  voice4mix.gain(0,.33);
+  voice4mix.gain(1,.33);
+  voice4mix.gain(2,.33);
 
-  oscillatorMixer.gain(0,1);
-  oscillatorMixer.gain(1,1);
-  oscillatorMixer.gain(2,1);
-  oscillatorMixer.gain(3,1);
+  oscillatorMixer.gain(0,.25);
+  oscillatorMixer.gain(1,.25);
+  oscillatorMixer.gain(2,.25);
+  oscillatorMixer.gain(3,.25);
 
   voice1filterModMixer.gain(0,1);
   voice1filterModMixer.gain(1,0);
@@ -104,12 +107,6 @@ void initializeMixersandFilters() {
   voice4filterModMixer.gain(1,0);
 
   masterMixer.gain(0,1);
-  masterMixer.gain(3,1); 
-
-  delayFilter.frequency(1000);
-  delayFilter.resonance(2);
-
-  masterDelay.delay(0, 500);
 
 }
 
@@ -176,19 +173,110 @@ void updateKnobs() {
   knob7 = analogRead(KNOB7);
   footpedal = analogRead(FOOTPEDAL);
 
-
   updateFilters(knob1, knob2); // This is causing major glitches
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
-  updateOscillatorDetune(knob6, footpedal);
+  updateOscillatorDetune(knob6);
+  updateEffect(footpedal);
   
 }
 
-void updateOscillatorDetune(int knobValue, int footpedal){
+
+void updateEffect(int footpedalValue) {
+  int bellowsValue = updateBellowsValue(footpedalValue);
+  if (tonebankEffect != lastToneBankEffect) {
+    // Turn them all off!
+    updateDelay(false, 0);
+    updateTremolo(false, 0);
+    updateWarble(false, 0);
+    updateBellows(false, 0);
+    lastToneBankEffect = tonebankEffect;
+  }
+  if (tonebankEffect == DELAY) {
+    updateDelay(true, bellowsValue);
+  } else if (tonebankEffect == WARBLE) {
+    updateWarble(true, bellowsValue);
+  } else if (tonebankEffect == BELLOWS) {
+    updateBellows(true, bellowsValue);
+  } else if (tonebankEffect == TREMOLO) {
+    updateTremolo(true, bellowsValue);
+  }
+}
+
+
+void updateDelay(bool effectOn, int footpedalValue) {
+  if (effectOn) {
+
+    // This should probably be put into separate outputs.
+    int delaySpeed = map(footpedalValue, 0, 1023, 100, 500);
+    masterMixer.gain(0,.7); 
+    masterMixer.gain(3,.3); 
+    delayFilter.frequency(1000);
+    delayFilter.resonance(2);
+    masterDelay.delay(0, delaySpeed);
+  } else {
+    // Turn everything off
+    masterMixer.gain(0,1); 
+    masterMixer.gain(3,0); 
+    delayFilter.frequency(500);
+    delayFilter.resonance(2);
+    masterDelay.disable(0);
+  }
+}
+
+void updateWarble(bool effectOn, int footpedalValue) {
+  if (effectOn) {
+    // Get to Warbling!
+    warbleAmount = mapfloat(footpedal, 0, 1023, -.05, .05);
+  } else {
+    // Cut it out!
+    warbleAmount = 0;
+  }
+}
+void updateBellows(bool effectOn, int footpedalValue) {
+  if (effectOn) {
+    // Get to Bellowing!
+    float reedsVolume = mapfloat(footpedal, 0, 1023, .3, 1);
+    masterMixer.gain(0,reedsVolume);
+  } else {
+    // Cut it out!
+    bellowsAmount = 0;
+  }
+}
+void updateTremolo(bool effectOn, int footpedalValue) {
+  if (effectOn) {
+    // Get to Tremoloing!
+    voice1filterModMixer.gain(0,.5);
+    voice1filterModMixer.gain(1,.5);
+    voice2filterModMixer.gain(0,.5);
+    voice2filterModMixer.gain(1,.5);
+    voice3filterModMixer.gain(0,.5);
+    voice3filterModMixer.gain(1,.5);
+    voice4filterModMixer.gain(0,.5);
+    voice4filterModMixer.gain(1,.5);
+
+    float masterLFOFrequency = mapfloat(footpedalValue, 0, 1023, 0, 1);
+
+    masterLFO.frequency(masterLFOFrequency);
+    masterLFO.amplitude(1);
+    
+  } else {
+    // Cut it out!
+    voice1filterModMixer.gain(0,1);
+    voice1filterModMixer.gain(1,0);
+    voice2filterModMixer.gain(0,1);
+    voice2filterModMixer.gain(1,0);
+    voice3filterModMixer.gain(0,1);
+    voice3filterModMixer.gain(1,0);
+    voice4filterModMixer.gain(0,1);
+    voice4filterModMixer.gain(1,0);    
+  }
+}
+
+
+void updateOscillatorDetune(int knobValue){
   oscillatorDetuneAmount = mapfloat(knobValue, 0, 1023, -1, 1);
-  float footpedalAmount = mapfloat(footpedal, 0, 1023, -.025, .025);
-  
-  oscillatorDetuneAmount = oscillatorDetuneAmount + footpedalAmount;
+  oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
 }
 
 
@@ -259,12 +347,13 @@ void updateTonebank() {
     toneBankLastChecked = millis() + ROTARY_REFRESH_RATE;
   }
   if( millis() - toneBankLastChecked > ROTARY_REFRESH_RATE ) {
-
+    
     // We are returning 4,5,6,7,8,9 from the rotary switch, so just subtract 4 from each result to get 0 - 5
     tonebankNumber = rotaryTurned(TONEBANK_ROTARY_PIN) - 4;
 
-    voiceaWaveform = tonebank[tonebankNumber][0];
-    voicebWaveform = tonebank[tonebankNumber][1];
+    voiceaWaveform = TONEBANK[tonebankNumber][0];
+    voicebWaveform = TONEBANK[tonebankNumber][1];
+    tonebankEffect = TONEBANK[tonebankNumber][2];
     
     if ( oldTonebankNumber != tonebankNumber ) {
       Serial.println(tonebankNumber);
@@ -298,34 +387,31 @@ void updateTranspose() {
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
     attackTime = 1000;
-    releaseTime = 1000;
-    filterAttackTime = 500;
-    filterReleaseTime = 500;
+    releaseTime = 3000;
+    filterAttackTime = 1800;
+    filterReleaseTime = 1000;
   } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 1500;
-    releaseTime = 2000;
+    attackTime = 2000;
+    releaseTime = 3000;
     filterAttackTime = 500;
-    filterReleaseTime = 500;
+    filterReleaseTime = 3000;
   } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
-    attackTime = 1000;
-    releaseTime = 2000;
-    filterAttackTime = 300;
+    attackTime = 1500;
+    releaseTime = 4000;
+    filterAttackTime = 2000;
     filterReleaseTime = 300; 
   }
 }
 
 void updateDroneMode() {
   if (digitalRead(SWITCHRIGHTBOTTOM) == LOW) {
-    oscillator_interval = 5;
-    oscillator_range = 5;
+    droneMode = ORGAN;
   }
   if (digitalRead(SWITCHRIGHTMIDDLE) == LOW) {
-    oscillator_interval = 5;
-    oscillator_range = 12;
+    droneMode = LATCH;
   }
   if (digitalRead(SWITCHRIGHTTOP) == LOW) {
-    oscillator_interval = 7;
-    oscillator_range = 5;
+    droneMode = TAMBOURA;
   }
 }
 

@@ -45,3 +45,20 @@ int rotaryTurned(int pinNum) {
    }
    return false;
 }
+
+
+int updateBellowsValue(int footpedalValue) {
+  currentMillis = millis();
+  if (currentMillis - beginningFilterInterval >= lengthIntervalFilter) {
+    beginningFilterInterval += lengthIntervalFilter;
+    currentBellowsPressure = (1 - BELLOWS_RELEASE_CONSTANT) * lastBellowsPressure + BELLOWS_FILL_CONSTANT * footpedalValue;
+    if (currentBellowsPressure > 3000) {
+      currentBellowsPressure = 3000; // This sets a max value for the bellows. It probably makes no mathematical sense to do it this way and then map it.
+    }
+    bellowsPressureMapped = map(currentBellowsPressure, 0, 3000, 0, 1023);
+    lastBellowsPressure = currentBellowsPressure; 
+    Serial.println(bellowsPressureMapped);
+  }
+  return bellowsPressureMapped;
+}
+
