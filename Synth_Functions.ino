@@ -127,40 +127,44 @@ void updateIndicators() {
   }
 }
 
-void startNote(int i) {
-  noteTrigFlag[i] = false;
-
+void stopNote(int i) {
   if (i == 0) {
     voice1filterenv.amplitude(-1, filterAttackTime);
     voice1env.amplitude(0,attackTime);
+    envelopeOpen[i] = false;
   } else if (i == 1) {
     voice2filterenv.amplitude(-1, filterAttackTime);
     voice2env.amplitude(0,attackTime);
+    envelopeOpen[i] = false;
   } else if (i == 2) {
     voice3filterenv.amplitude(-1, filterAttackTime);
     voice3env.amplitude(0,attackTime);
+    envelopeOpen[i] = false;
   } else if (i == 3) {
     voice4filterenv.amplitude(-1, filterAttackTime);
     voice4env.amplitude(0,attackTime);
-  }   
+    envelopeOpen[i] = false;
+  }
 }
 
-void stopNote(int i) {  
-  noteTrigFlag[i] = true;
-  attackWait[i] = millis();
+void startNote(int i) {  
   if (i == 0) {
     voice1filterenv.amplitude(1,filterReleaseTime);
     voice1env.amplitude(1,releaseTime);
+    envelopeOpen[i] = true;
   } else if (i == 1) {
     voice2filterenv.amplitude(1,filterReleaseTime);
     voice2env.amplitude(1,releaseTime);
+    envelopeOpen[i] = true;
   } else if (i == 2) {
     voice3filterenv.amplitude(1,filterReleaseTime);
     voice3env.amplitude(1,releaseTime);
+    envelopeOpen[i] = true;
   } else if (i == 3) {
     voice4filterenv.amplitude(1,filterReleaseTime);
     voice4env.amplitude(1,releaseTime);
-  }   
+    envelopeOpen[i] = true;
+  }
 }
 
 void updateKnobs() {
@@ -236,7 +240,7 @@ void updateWarble(bool effectOn, int footpedalValue) {
 void updateBellows(bool effectOn, int footpedalValue) {
   if (effectOn) {
     // Get to Bellowing!
-    float reedsVolume = mapfloat(footpedal, 0, 1023, .3, 1);
+    float reedsVolume = mapfloat(footpedal, 0, 1023, 0, 1);
     masterMixer.gain(0,reedsVolume);
   } else {
     // Cut it out!
@@ -255,10 +259,10 @@ void updateTremolo(bool effectOn, int footpedalValue) {
     voice4filterModMixer.gain(0,.5);
     voice4filterModMixer.gain(1,.5);
 
-    float masterLFOFrequency = mapfloat(footpedalValue, 0, 1023, 0, 1);
+    float masterLFOFrequency = mapfloat(footpedalValue, 0, 1023, 0, .5);
 
     masterLFO.frequency(masterLFOFrequency);
-    masterLFO.amplitude(1);
+    masterLFO.amplitude(.2);
     
   } else {
     // Cut it out!
@@ -384,50 +388,9 @@ void updateTranspose() {
   }
 }
 
-void updateEnvelopeMode() {
-  if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
-    attackTime = 1000;
-    releaseTime = 3000;
-    filterAttackTime = 1800;
-    filterReleaseTime = 1000;
-  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 2000;
-    releaseTime = 3000;
-    filterAttackTime = 500;
-    filterReleaseTime = 3000;
-  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
-    attackTime = 1500;
-    releaseTime = 4000;
-    filterAttackTime = 2000;
-    filterReleaseTime = 300; 
-  }
-}
 
-void updateDroneMode() {
-  if (digitalRead(SWITCHRIGHTBOTTOM) == LOW) {
-    droneMode = ORGAN;
-  }
-  if (digitalRead(SWITCHRIGHTMIDDLE) == LOW) {
-    droneMode = LATCH;
-  }
-  if (digitalRead(SWITCHRIGHTTOP) == LOW) {
-    droneMode = TAMBOURA;
-  }
-}
 
-void updateKeys() {
-  for(int i=0; i<4; i++){
-    btnState[i] = digitalRead(notePins[i]);
-    if (noteBounce[i].update()){
-        if (noteBounce[i].fallingEdge()){
-          startNote(i);
-        } else if(noteBounce[i].risingEdge()) {
-          stopNote(i);
-        }
-    }
-    prevBtnState[i] = btnState[i];
-  }
-}
+
 
 
 void updateFilters(int filterFrequency, int filterResonance) {
@@ -445,5 +408,89 @@ void updateFilters(int filterFrequency, int filterResonance) {
     voice3filter.resonance(filterResonanceMapped);
     voice4filter.resonance(filterResonanceMapped);
 }
+
+
+void updateKeys() {
+  // RISING EDGE -> PUSHED BUTTON
+  // FALLING EDGE -> UNPUSHED BUTTON
+  for(int i=0; i<4; i++){
+    if (noteBounce[i].update()){
+        if (droneMode == ORGAN) {
+          if (noteBounce[i].risingEdge()) { // Button pushed, turn on note
+            startNote(i);
+            channelOn[i] = true;
+          } else if (noteBounce[i].fallingEdge()) { // Button unpushed
+            stopNote(i);
+            channelOn[i] = false;
+          }
+        } else if (droneMode == LATCH) {
+          if (noteBounce[i].risingEdge()) { // Button pushed
+            if (channelOn[i] == false) { // note was off, turn it on
+              startNote(i);
+              channelOn[i] = true;
+            } else {
+              stopNote(i);
+              channelOn[i] = false;
+            }
+          }
+        } else if (droneMode == TAMBOURA) {
+          unsigned long currentTambouraMillis = millis();
+          if (noteBounce[i].risingEdge()) { // Button pushed
+            if (channelOn[i] == false) { // channel was off, turn it on
+              channelOn[i] = true;
+
+              // We hit the interval
+              if (currentTambouraMillis - previousTambouraMillis >= tambouraInterval) {
+                // save the last time you opened the envelope
+                previousTambouraMillis = currentTambouraMillis;
+            
+                // if the LED is off turn it on and vice-versa:
+                if (envelopeOpen[i] == false) {
+                  startNote(i);
+                }
+      
+              }            
+            } else {
+              // Turn off that channel
+              channelOn[i] = false;
+            }
+          }
+        }
+    }
+  }
+  
+}
+
+void updateEnvelopeMode() {
+  if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
+    attackTime = 3000;
+    releaseTime = 4000;
+    filterAttackTime = 4000;
+    filterReleaseTime = 1000;
+  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
+    attackTime = 2000;
+    releaseTime = 3000;
+    filterAttackTime = 2000;
+    filterReleaseTime = 3000;
+  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
+    attackTime = 50;
+    releaseTime = 50;
+    filterAttackTime = 50;
+    filterReleaseTime = 50; 
+  }
+}
+
+void updateDroneMode() {
+  if (digitalRead(SWITCHRIGHTBOTTOM) == LOW) {
+    droneMode = ORGAN;
+  }
+  if (digitalRead(SWITCHRIGHTMIDDLE) == LOW) {
+    droneMode = LATCH;
+  }
+  if (digitalRead(SWITCHRIGHTTOP) == LOW) {
+    droneMode = TAMBOURA;
+  }
+}
+
 
 

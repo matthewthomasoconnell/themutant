@@ -1,3 +1,5 @@
+
+
 #include <Audio.h>
 #include <Wire.h>
 #include <Bounce.h>
@@ -122,12 +124,12 @@ const int DELAY = 2;
 const int BELLOWS = 3;
 
 const int TONEBANK[6][3] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, DELAY},
-   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, TREMOLO},
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, BELLOWS},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, BELLOWS},
    {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, BELLOWS},
-   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WARBLE},
-   {WAVEFORM_SINE, WAVEFORM_SINE, WARBLE},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, WARBLE} 
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, BELLOWS},
+   {WAVEFORM_SINE, WAVEFORM_SINE, BELLOWS},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, BELLOWS} 
 };
 
 // Tonebank Constants
@@ -137,12 +139,19 @@ const int TAMBOURA = 2;
 
 int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
 
-
-
 // Initialize Buttons and Note Pins
 const int notePins[4] = {0,1,24,25};
 const int indicatorLeds[4] = {6,2,8,4};
-int btnState[4], prevBtnState[4];
+//int btnState[4];
+int channelOn[4] = {false, false, false, false}; // I don't understand why this solves the envelope problem, but it does
+int envelopeOpen[4] = {false, false, false, false};
+
+
+// Tamboura Stuff
+unsigned long previousTambouraMillis = 0;        // will store last time LED was updated
+unsigned long tambouraInterval = 10000;
+
+
 // Initialize Buttons
 Bounce noteBounce[] = {
   Bounce(notePins[0],10),
@@ -175,7 +184,7 @@ float warbleAmount, bellowsAmount;
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
-const float scales[12] ={16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87};
+const float scales[12] ={16.35 * 2, 17.32 * 2, 18.35 * 2, 19.45 * 2, 20.60 * 2, 21.83 * 2, 23.12 * 2, 24.50 * 2, 25.96 * 2, 27.50 * 2, 29.14 * 2, 30.87 * 2};
 int oldScale = scales[0];
 
 // Initialize Envelope
