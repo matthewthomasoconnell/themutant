@@ -177,12 +177,12 @@ void updateKnobs() {
   knob7 = analogRead(KNOB7);
   footpedal = analogRead(FOOTPEDAL);
 
-  updateFilters(knob1, knob2); // This is causing major glitches
+  updateFilters(knob1, knob2); // This is causing glitches
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6);
   updateEffect(footpedal);
-  
+
 }
 
 
@@ -310,17 +310,34 @@ void updateNoise(int noiseLevel) {
     
 }
 
+
+
+
+
 void updateSliders() {
   slider1 = analogRead(SLIDER1);
   slider2 = analogRead(SLIDER2);
   slider3 = analogRead(SLIDER3);
   slider4 = analogRead(SLIDER4);
 
-  // Map the sliders to specific starting notes and intervals
-  float osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
-  float osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
-  float osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
-  float osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
+  float osc1freq, osc2freq, osc3freq, osc4freq;
+
+  if (MANUAL_INTERVALS_ENABLED == true) {
+    // Map the sliders to manually-enterred intervals
+    osc1freq = mapfloat(slider1, 0, 1023, MANUAL_INTERVALS[newScale][0][0], MANUAL_INTERVALS[newScale][0][1]);
+    osc2freq = mapfloat(slider2, 0, 1023, MANUAL_INTERVALS[newScale][1][0], MANUAL_INTERVALS[newScale][1][1]);
+    osc3freq = mapfloat(slider3, 0, 1023, MANUAL_INTERVALS[newScale][2][0], MANUAL_INTERVALS[newScale][2][1]);
+    osc4freq = mapfloat(slider4, 0, 1023, MANUAL_INTERVALS[newScale][3][0], MANUAL_INTERVALS[newScale][3][1]);
+  } else {
+    // Map the sliders to specific starting notes and intervals (4ths here)
+    osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
+    osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
+    osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
+    osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
+  }
+  
+
+  Serial.println(osc3freq);
 
   voice1a.frequency(osc1freq);
   voice2a.frequency(osc2freq);
