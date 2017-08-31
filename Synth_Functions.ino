@@ -129,40 +129,40 @@ void updateIndicators() {
 
 void stopNote(int i) {
   if (i == 0) {
-    voice1filterenv.amplitude(-1, filterAttackTime);
-    voice1env.amplitude(0,attackTime);
+    voice1filterenv.amplitude(-1, filterReleaseTime);
+    voice1env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
   } else if (i == 1) {
-    voice2filterenv.amplitude(-1, filterAttackTime);
-    voice2env.amplitude(0,attackTime);
+    voice2filterenv.amplitude(-1, filterReleaseTime);
+    voice2env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
   } else if (i == 2) {
-    voice3filterenv.amplitude(-1, filterAttackTime);
-    voice3env.amplitude(0,attackTime);
+    voice3filterenv.amplitude(-1, filterReleaseTime);
+    voice3env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
   } else if (i == 3) {
-    voice4filterenv.amplitude(-1, filterAttackTime);
-    voice4env.amplitude(0,attackTime);
+    voice4filterenv.amplitude(-1, filterReleaseTime);
+    voice4env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
   }
 }
 
 void startNote(int i) {  
   if (i == 0) {
-    voice1filterenv.amplitude(1,filterReleaseTime);
-    voice1env.amplitude(1,releaseTime);
+    voice1filterenv.amplitude(1,filterAttackTime);
+    voice1env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
   } else if (i == 1) {
-    voice2filterenv.amplitude(1,filterReleaseTime);
-    voice2env.amplitude(1,releaseTime);
+    voice2filterenv.amplitude(1,filterAttackTime);
+    voice2env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
   } else if (i == 2) {
-    voice3filterenv.amplitude(1,filterReleaseTime);
-    voice3env.amplitude(1,releaseTime);
+    voice3filterenv.amplitude(1,filterAttackTime);
+    voice3env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
   } else if (i == 3) {
-    voice4filterenv.amplitude(1,filterReleaseTime);
-    voice4env.amplitude(1,releaseTime);
+    voice4filterenv.amplitude(1,filterAttackTime);
+    voice4env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
   }
 }
@@ -177,11 +177,13 @@ void updateKnobs() {
   knob7 = analogRead(KNOB7);
   footpedal = analogRead(FOOTPEDAL);
 
-  updateFilters(knob1, knob2); // This is causing glitches
+  updateFilters(knob1, knob2); // This is causing major glitches
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6);
   updateEffect(footpedal);
+
+
 
 }
 
@@ -205,6 +207,7 @@ void updateEffect(int footpedalValue) {
   } else if (tonebankEffect == TREMOLO) {
     updateTremolo(true, bellowsValue);
   }
+  
 }
 
 
@@ -231,7 +234,7 @@ void updateDelay(bool effectOn, int footpedalValue) {
 void updateWarble(bool effectOn, int footpedalValue) {
   if (effectOn) {
     // Get to Warbling!
-    warbleAmount = mapfloat(footpedal, 0, 1023, -.05, .05);
+    warbleAmount = mapfloat(footpedal, 0, 1023, -.03, .03);
   } else {
     // Cut it out!
     warbleAmount = 0;
@@ -246,6 +249,10 @@ void updateBellows(bool effectOn, int footpedalValue) {
     // Cut it out!
     bellowsAmount = 0;
   }
+
+
+
+  
 }
 void updateTremolo(bool effectOn, int footpedalValue) {
   if (effectOn) {
@@ -311,33 +318,16 @@ void updateNoise(int noiseLevel) {
 }
 
 
-
-
-
 void updateSliders() {
   slider1 = analogRead(SLIDER1);
   slider2 = analogRead(SLIDER2);
   slider3 = analogRead(SLIDER3);
   slider4 = analogRead(SLIDER4);
 
-  float osc1freq, osc2freq, osc3freq, osc4freq;
-
-  if (MANUAL_INTERVALS_ENABLED == true) {
-    // Map the sliders to manually-enterred intervals
-    osc1freq = mapfloat(slider1, 0, 1023, MANUAL_INTERVALS[newScale][0][0], MANUAL_INTERVALS[newScale][0][1]);
-    osc2freq = mapfloat(slider2, 0, 1023, MANUAL_INTERVALS[newScale][1][0], MANUAL_INTERVALS[newScale][1][1]);
-    osc3freq = mapfloat(slider3, 0, 1023, MANUAL_INTERVALS[newScale][2][0], MANUAL_INTERVALS[newScale][2][1]);
-    osc4freq = mapfloat(slider4, 0, 1023, MANUAL_INTERVALS[newScale][3][0], MANUAL_INTERVALS[newScale][3][1]);
-  } else {
-    // Map the sliders to specific starting notes and intervals (4ths here)
-    osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
-    osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
-    osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
-    osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
-  }
-  
-
-  Serial.println(osc3freq);
+  float osc1freq = mapfloat(slider1, 0, 1023, fixed_intervals[newScale][0][0], fixed_intervals[newScale][0][1]);
+  float osc2freq = mapfloat(slider2, 0, 1023, fixed_intervals[newScale][1][0], fixed_intervals[newScale][1][1]);
+  float osc3freq = mapfloat(slider3, 0, 1023, fixed_intervals[newScale][2][0], fixed_intervals[newScale][2][1]);
+  float osc4freq = mapfloat(slider4, 0, 1023, fixed_intervals[newScale][3][0], fixed_intervals[newScale][3][1]);
 
   voice1a.frequency(osc1freq);
   voice2a.frequency(osc2freq);
@@ -360,6 +350,43 @@ void updateSliders() {
 
 
 }
+
+
+// THIS IS FOR CHROMATIC, 4THS
+//
+//void updateSliders() {
+//  slider1 = analogRead(SLIDER1);
+//  slider2 = analogRead(SLIDER2);
+//  slider3 = analogRead(SLIDER3);
+//  slider4 = analogRead(SLIDER4);
+//
+//  // Map the sliders to specific starting notes and intervals
+//  float osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
+//  float osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
+//  float osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
+//  float osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
+//
+//  voice1a.frequency(osc1freq);
+//  voice2a.frequency(osc2freq);
+//  voice3a.frequency(osc3freq);
+//  voice4a.frequency(osc4freq);
+//
+////  Serial.println(oscillatorDetuneAmount);
+//
+//  if (oscillatorDetuneAmount >= 0) {
+//    voice1b.frequency(osc1freq + oscillatorDetuneAmount * osc1freq);
+//    voice2b.frequency(osc2freq + oscillatorDetuneAmount * osc2freq);
+//    voice3b.frequency(osc3freq + oscillatorDetuneAmount * osc3freq);
+//    voice4b.frequency(osc4freq + oscillatorDetuneAmount * osc4freq);
+//  } else {
+//    voice1b.frequency(osc1freq + (oscillatorDetuneAmount * osc1freq) / 2);
+//    voice2b.frequency(osc2freq + (oscillatorDetuneAmount * osc2freq) / 2);
+//    voice3b.frequency(osc3freq + (oscillatorDetuneAmount * osc3freq) / 2);
+//    voice4b.frequency(osc4freq + (oscillatorDetuneAmount * osc4freq) / 2);
+//  }
+//
+//
+//}
 
 
 void updateTonebank() {
@@ -481,19 +508,19 @@ void updateKeys() {
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
     attackTime = 3000;
-    releaseTime = 4000;
+    releaseTime = 7000;
     filterAttackTime = 4000;
-    filterReleaseTime = 1000;
+    filterReleaseTime = 7000;
   } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
     attackTime = 2000;
     releaseTime = 3000;
     filterAttackTime = 2000;
     filterReleaseTime = 3000;
   } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
-    attackTime = 50;
-    releaseTime = 50;
-    filterAttackTime = 50;
-    filterReleaseTime = 50; 
+    attackTime = 10;
+    releaseTime = 500;
+    filterAttackTime = 10;
+    filterReleaseTime = 50;
   }
 }
 

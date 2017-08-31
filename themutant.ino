@@ -124,43 +124,13 @@ const int DELAY = 2;
 const int BELLOWS = 3;
 
 const int TONEBANK[6][3] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, BELLOWS},
-   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, BELLOWS},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, BELLOWS},
-   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, BELLOWS},
-   {WAVEFORM_SINE, WAVEFORM_SINE, BELLOWS},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, BELLOWS} 
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, WARBLE},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, WARBLE},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WARBLE},
+   {WAVEFORM_SINE, WAVEFORM_SINE, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, WARBLE} 
 };
-
-const bool MANUAL_INTERVALS_ENABLED = true;
-const float MANUAL_INTERVALS[12][4][2] = {
-    //C  261.63  
-    //C# 272.54  
-    //D  294.33  
-    //D# 313.96  
-    //#  327.03  
-    //F  348.83  
-    //F# 367.92  
-    //G  392.44  
-    //G# 418.60  
-    //A  436.05  
-    //A# 470.93  
-    //B  490.55  
-    //C  523.25
-   {{313.96,367.92},{418.60,470.93},{545.00,627.92},{627.92,735.84}}, // {{D#|6,F#|1},{G#|2,A#|3},{C#|5,D#|6},{D#|6,F#|1}}
-   {{313.96,367.92},{418.60,470.93},{490.55,272.54 * 2},{313.96 * 2,367.92 * 2}}, // {{D#|6,F#|1},{G#|2,A#|3},{B|4,C#|5},{D#|6,F#|1}}
-   {{60,120},{120,240},{240,480},{480,960}},
-   {{60,120},{120,240},{240,480},{480,960}},
-   {{60,120},{120,240},{240,480},{480,960}},
-   {{60,120},{120,240},{240,480},{480,960}},
-   {{60,120},{120,240},{240,480},{480,960}},
-   {{100,105},{100,105},{100,105},{100,105}},
-   {{100,105},{100,105},{100,105},{100,105}},
-   {{0,0},{0,0},{0,0},{0,0}},
-   {{0,0},{0,0},{0,0},{0,0}},
-   {{0,0},{0,0},{0,0},{0,0}}
-};
-
 
 // Tonebank Constants
 const int ORGAN = 0;
@@ -214,8 +184,53 @@ float warbleAmount, bellowsAmount;
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
-const float scales[12] ={16.35 * 2, 17.32 * 2, 18.35 * 2, 19.45 * 2, 20.60 * 2, 21.83 * 2, 23.12 * 2, 24.50 * 2, 25.96 * 2, 27.50 * 2, 29.14 * 2, 30.87 * 2};
+const float scales[12] = {16.35 * 2, 17.32 * 2, 18.35 * 2, 19.45 * 2, 20.60 * 2, 21.83 * 2, 23.12 * 2, 24.50 * 2, 25.96 * 2, 27.50 * 2, 29.14 * 2, 30.87 * 2};
 int oldScale = scales[0];
+
+const float fixed_intervals[12][4][2] = {
+
+// PENTATONIC, ROOT F#, OCTAVE DOWN
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{92.50,103.83},{103.83,116.54},{138.59,155.56},{155.56,185.00}},
+
+// PENTATONIC, ROOT F#
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{185.00,207.65},{207.65,233.08},{277.18,311.13},{311.13,369.99}},
+
+// PENTATONIC, ROOT F#, OCTAVE UP
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+
+// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
+// {{1|F#,4|B},{5|C#,6|D#},{6|D#,7|E},{7|E,1|F#}}
+   {{185.00,246.94},{277.18,311.13},{311.13,329.63},{329.63,369.99}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
+   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
+   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
+
+// SURFER TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{4|B,5|C#},{1|F#,2|G#},{3|A#,4|B},{5|C#,6|D#}}
+   {{246.94,277.18},{369.99,415.30},{466.16,493.88},{554.37,622.25}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|B,6|C#},{1|E,2|F#},{2|F#,3|G#},{5|B,6|C#}}
+   {{246.94,277.18},{329.63,369.99},{369.99,415.30},{493.88,554.37}},
+
+// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
+// {{1|E,4|A},{5|B,6|C#},{6|C#,7|D#},{7|D#,1|E}}
+   {{164.81,220.00},{246.94,277.18},{277.18,311.13},{311.13,329.63}},
+
+   
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}}
+  };
+
 
 // Initialize Envelope
 int droneMode;
@@ -233,8 +248,8 @@ const int lengthIntervalFilter = 30;
 unsigned beginningFilterInterval, currentMillis, bellowsPressureMapped;
 float currentBellowsPressure = 0;
 float lastBellowsPressure = 0;
-const float BELLOWS_RELEASE_CONSTANT = .04;
-const float BELLOWS_FILL_CONSTANT = .4;
+const float BELLOWS_RELEASE_CONSTANT = .005;
+const float BELLOWS_FILL_CONSTANT = .6;
 
 
 void setup() {
