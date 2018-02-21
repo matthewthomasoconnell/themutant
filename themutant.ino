@@ -124,12 +124,12 @@ const int DELAY = 2;
 const int BELLOWS = 3;
 
 const int TONEBANK[6][3] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, BELLOWS},
-   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, BELLOWS},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, BELLOWS},
-   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, BELLOWS},
-   {WAVEFORM_SINE, WAVEFORM_SINE, BELLOWS},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, BELLOWS} 
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, WARBLE},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, WARBLE},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WARBLE},
+   {WAVEFORM_SINE, WAVEFORM_SINE, WARBLE},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, WARBLE} 
 };
 
 // Tonebank Constants
@@ -204,6 +204,51 @@ const int modes[6][4][2] =
 
 
 
+const float fixed_intervals[12][4][2] = {
+
+// PENTATONIC, ROOT F#, OCTAVE DOWN
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{92.50,103.83},{103.83,116.54},{138.59,155.56},{155.56,185.00}},
+
+// PENTATONIC, ROOT F#
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{185.00,207.65},{207.65,233.08},{277.18,311.13},{311.13,369.99}},
+
+// PENTATONIC, ROOT F#, OCTAVE UP
+// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+
+// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
+// {{1|F#,4|B},{5|C#,6|D#},{6|D#,7|E},{7|E,1|F#}}
+   {{185.00,246.94},{277.18,311.13},{311.13,329.63},{329.63,369.99}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
+   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
+   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
+
+// SURFER TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{4|B,5|C#},{1|F#,2|G#},{3|A#,4|B},{5|C#,6|D#}}
+   {{246.94,277.18},{369.99,415.30},{466.16,493.88},{554.37,622.25}},
+
+// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
+// {{5|B,6|C#},{1|E,2|F#},{2|F#,3|G#},{5|B,6|C#}}
+   {{246.94,277.18},{329.63,369.99},{369.99,415.30},{493.88,554.37}},
+
+// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
+// {{1|E,4|A},{5|B,6|C#},{6|C#,7|D#},{7|D#,1|E}}
+   {{164.81,220.00},{246.94,277.18},{277.18,311.13},{311.13,329.63}},
+
+   
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
+   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}}
+  };
+
+
 // Initialize Envelope
 int droneMode;
 int attackTime, decayTime, releaseTime;
@@ -220,8 +265,8 @@ const int lengthIntervalFilter = 30;
 unsigned beginningFilterInterval, currentMillis, bellowsPressureMapped;
 float currentBellowsPressure = 0;
 float lastBellowsPressure = 0;
-const float BELLOWS_RELEASE_CONSTANT = .04;
-const float BELLOWS_FILL_CONSTANT = .4;
+const float BELLOWS_RELEASE_CONSTANT = .005;
+const float BELLOWS_FILL_CONSTANT = .6;
 
 
 void setup() {
