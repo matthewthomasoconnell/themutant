@@ -123,13 +123,17 @@ const int WARBLE = 1;
 const int DELAY = 2;
 const int BELLOWS = 3;
 
-const int TONEBANK[6][3] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, WARBLE},
-   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, WARBLE},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, WARBLE},
-   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WARBLE},
-   {WAVEFORM_SINE, WAVEFORM_SINE, WARBLE},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH_REVERSE, WARBLE} 
+const int TONEBANK[10][2] = {  
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH},
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE},
+   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH},
+   {WAVEFORM_SINE, WAVEFORM_SAWTOOTH},
+   {WAVEFORM_SINE, WAVEFORM_SQUARE},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE},
+   {WAVEFORM_SINE, WAVEFORM_TRIANGLE},
+   {WAVEFORM_SINE, WAVEFORM_SINE} 
 };
 
 // Tonebank Constants
@@ -163,30 +167,27 @@ Bounce noteBounce[] = {
 
 // Initialize Rotary Switches
 const int ROTARY_REFRESH_RATE = 50;
-const int TONEBANK_ROTARY_PIN = A17;
+const int MODE_ROTARY_PIN = A17;
 const int TRANSPOSE_ROTARY_PIN = A16;
-long toneBankLastChecked = 0;
+long modeLastChecked = 0;
 long transposeLastChecked = 0;
-int current_transpose = 0;
+int oldTranspose = 0;
+long tonebankLastChecked = 0;
+long octaveLastChecked = 0;
+int currentTranspose = 0;
+int currentMode = 0;
 int newScale;
-
-//Oscillator Intervals and Ranges
-int oscillator_octave = 4;
-int oscillator_range = 5;
-int oscillator_interval = 5; // in half steps (5 => 4ths, 7 => 5ths)
 int slider1, slider2, slider3, slider4;
 
 // Initialize the Tonebank variables
 // I'd like to put volume, octave, and other variables in here for more consistency
-int oldTonebankNumber, tonebankNumber, voiceaWaveform, voicebWaveform, tonebankEffect, lastToneBankEffect;
+int oldTonebankNumber, tonebankNumber, oldOctaveNumber, octaveNumber, voiceaWaveform, voicebWaveform;
+
 float warbleAmount, bellowsAmount;
-
-
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
 const float frequencies[12] = {4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13};
-int old_transpose = 0; // I don't remember what this is doing.
 
 // Initialize Modes
 // C C# D D# E F F# G G# A A# B
@@ -199,54 +200,8 @@ const int modes[6][4][2] =
   {{ 0, 5 }, { 7, 9 }, { 9, 11 },{ 11, 12 }},       // Mode 3 {{1|C,4|F},{5|G,6|A},{6|A,7|B},{7|B,8|C}}  ALTERNATIVE
   {{ 7, 9 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},    // Mode 4 {{5|G,6|A},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  STILL LIFE
   {{ 5, 7 }, { 12, 14 }, { 16, 17 },{ 19, 21 }},    // Mode 5 {{4|F,5|G},{1|C,2|D},{3|E,4|F},{5|G,6|A}}  SURFER
-  {{ 0, 12 }, { 0, 12 }, { 0, 12 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
+  {{ 0, 12 }, { 0, 12 }, { 12, 24 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
 };
-
-
-
-const float fixed_intervals[12][4][2] = {
-
-// PENTATONIC, ROOT F#, OCTAVE DOWN
-// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
-   {{92.50,103.83},{103.83,116.54},{138.59,155.56},{155.56,185.00}},
-
-// PENTATONIC, ROOT F#
-// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
-   {{185.00,207.65},{207.65,233.08},{277.18,311.13},{311.13,369.99}},
-
-// PENTATONIC, ROOT F#, OCTAVE UP
-// {{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#},{6|D#,1|F#}}
-   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
-
-// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
-// {{1|F#,4|B},{5|C#,6|D#},{6|D#,7|E},{7|E,1|F#}}
-   {{185.00,246.94},{277.18,311.13},{311.13,329.63},{329.63,369.99}},
-
-// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
-// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
-   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
-
-// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
-// {{5|C#,6|D#},{1|F#,2|G#},{2|G#,3|A#},{5|C#,6|D#}}
-   {{277.18,311.13},{369.99,415.30},{415.30,466.16},{554.37,622.25}},
-
-// SURFER TUNING, ROOT C#, IS THIS MIXOLYDIAN?
-// {{4|B,5|C#},{1|F#,2|G#},{3|A#,4|B},{5|C#,6|D#}}
-   {{246.94,277.18},{369.99,415.30},{466.16,493.88},{554.37,622.25}},
-
-// STILL LIFE TUNING, ROOT C#, IS THIS MIXOLYDIAN?
-// {{5|B,6|C#},{1|E,2|F#},{2|F#,3|G#},{5|B,6|C#}}
-   {{246.94,277.18},{329.63,369.99},{369.99,415.30},{493.88,554.37}},
-
-// ALTERNATIVE, ROOT F#, IS THIS MIXOLYDIAN?
-// {{1|E,4|A},{5|B,6|C#},{6|C#,7|D#},{7|D#,1|E}}
-   {{164.81,220.00},{246.94,277.18},{277.18,311.13},{311.13,329.63}},
-
-   
-   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
-   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}},
-   {{369.99,415.30},{415.30,466.16},{554.37,622.25},{622.25,739.99}}
-  };
 
 
 // Initialize Envelope
@@ -279,7 +234,7 @@ void setup() {
 
 void loop() {
   
-  updateTonebank(); // Right Rotary Switch
+  updateMode(); // Right Rotary Switch
   updateKnobs(); // 7 Rotary Pots
   updateSliders(); // 4 Slider Pots
   updateTranspose(); // Left Rotary Switch

@@ -105,6 +105,11 @@ void initializeMixersandFilters() {
 
   masterMixer.gain(0,1);
 
+  voice1filter.resonance(2);
+  voice2filter.resonance(2);
+  voice3filter.resonance(2);
+  voice4filter.resonance(2);
+
 }
 
 void updateIndicators() {
@@ -174,107 +179,14 @@ void updateKnobs() {
   knob7 = analogRead(KNOB7);
   footpedal = analogRead(FOOTPEDAL);
 
-  updateFilters(knob1, knob2); // This is causing major glitches
+  updateFilters(knob1);
+  updateOctave(knob2);
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6);
+  updateWaveforms(knob7);
+  
 //  updateEffect(footpedal);
-
-
-void updateEffect(int footpedalValue) {
-  int bellowsValue = updateBellowsValue(footpedalValue);
-  if (tonebankEffect != lastToneBankEffect) {
-    // Turn them all off!
-    updateDelay(false, 0);
-    updateTremolo(false, 0);
-    updateWarble(false, 0);
-    updateBellows(false, 0);
-    lastToneBankEffect = tonebankEffect;
-  }
-  if (tonebankEffect == DELAY) {
-    updateDelay(true, bellowsValue);
-  } else if (tonebankEffect == WARBLE) {
-    updateWarble(true, bellowsValue);
-  } else if (tonebankEffect == BELLOWS) {
-    updateBellows(true, bellowsValue);
-  } else if (tonebankEffect == TREMOLO) {
-    updateTremolo(true, bellowsValue);
-  }
-  
-}
-
-
-void updateDelay(bool effectOn, int footpedalValue) {
-  if (effectOn) {
-
-    // This should probably be put into separate outputs.
-    int delaySpeed = map(footpedalValue, 0, 1023, 100, 500);
-    masterMixer.gain(0,.7); 
-    masterMixer.gain(3,.3); 
-    delayFilter.frequency(1000);
-    delayFilter.resonance(2);
-    masterDelay.delay(0, delaySpeed);
-  } else {
-    // Turn everything off
-    masterMixer.gain(0,1); 
-    masterMixer.gain(3,0); 
-    delayFilter.frequency(500);
-    delayFilter.resonance(2);
-    masterDelay.disable(0);
-  }
-}
-
-void updateWarble(bool effectOn, int footpedalValue) {
-  if (effectOn) {
-    // Get to Warbling!
-    warbleAmount = mapfloat(footpedal, 0, 1023, -.03, .03);
-  } else {
-    // Cut it out!
-    warbleAmount = 0;
-  }
-}
-void updateBellows(bool effectOn, int footpedalValue) {
-  if (effectOn) {
-    // Get to Bellowing!
-    float reedsVolume = mapfloat(footpedal, 0, 1023, 0, 1);
-    masterMixer.gain(0,reedsVolume);
-  } else {
-    // Cut it out!
-    bellowsAmount = 0;
-  }
-
-
-
-  
-}
-void updateTremolo(bool effectOn, int footpedalValue) {
-  if (effectOn) {
-    // Get to Tremoloing!
-    voice1filterModMixer.gain(0,.5);
-    voice1filterModMixer.gain(1,.5);
-    voice2filterModMixer.gain(0,.5);
-    voice2filterModMixer.gain(1,.5);
-    voice3filterModMixer.gain(0,.5);
-    voice3filterModMixer.gain(1,.5);
-    voice4filterModMixer.gain(0,.5);
-    voice4filterModMixer.gain(1,.5);
-
-    float masterLFOFrequency = mapfloat(footpedalValue, 0, 1023, 0, .5);
-
-    masterLFO.frequency(masterLFOFrequency);
-    masterLFO.amplitude(.2);
-    
-  } else {
-    // Cut it out!
-    voice1filterModMixer.gain(0,1);
-    voice1filterModMixer.gain(1,0);
-    voice2filterModMixer.gain(0,1);
-    voice2filterModMixer.gain(1,0);
-    voice3filterModMixer.gain(0,1);
-    voice3filterModMixer.gain(1,0);
-    voice4filterModMixer.gain(0,1);
-    voice4filterModMixer.gain(1,0);    
-  }
 }
 
 
@@ -283,6 +195,19 @@ void updateOscillatorDetune(int knobValue){
   oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
 }
 
+void updateOctave(int tonebankKnob) {
+  if( octaveLastChecked == 0 ) {
+    octaveLastChecked = millis() + ROTARY_REFRESH_RATE; 
+  }
+  if( millis() - octaveLastChecked > ROTARY_REFRESH_RATE ) {
+    octaveNumber = returnOctaveFromPot(tonebankKnob);
+    if ( oldOctaveNumber != octaveNumber ) {
+      Serial.println(octaveNumber);
+      oldOctaveNumber = octaveNumber;
+    }
+    octaveLastChecked = millis();
+  }
+}
 
 void updateOscillatorRatio(int knobValue){
   float voiceaAmplitude = mapfloat(knobValue, 0, 1023, 0, 1);
@@ -299,7 +224,6 @@ void updateOscillatorRatio(int knobValue){
   voice4b.amplitude(voicebAmplitude);
 }
 
-
 void updateNoise(int noiseLevel) {
     float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
     voice1n.amplitude(noiseLevelMapped);
@@ -307,7 +231,6 @@ void updateNoise(int noiseLevel) {
     voice3n.amplitude(noiseLevelMapped);
     voice4n.amplitude(noiseLevelMapped);
 }
-
 
 void updateSliders() {
   slider1 = analogRead(SLIDER1);
@@ -320,7 +243,6 @@ void updateSliders() {
   float osc2freq = mapfloat(slider2, 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
   float osc3freq = mapfloat(slider3, 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
   float osc4freq = mapfloat(slider4, 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
-
 
   voice1a.frequency(osc1freq);
   voice2a.frequency(osc2freq);
@@ -342,70 +264,44 @@ void updateSliders() {
 }
 
 
-float calculateSliderBound(int slider_number, int upper_or_lower) {
-  int current_mode = 5; // THIS WILL BE CHANGED BASED ON ONE OF THE ROTARY KNOBS
-//  int current_transpose = 1; // THIS WILL BE CHANGED BASED ON ONE OF THE ROTARY KNOBS
-  int transposed_mode_interval = modes[current_mode][slider_number - 1][upper_or_lower] + current_transpose;
-  int octave_multiplier = (transposed_mode_interval >= 12) ? (-1) : (0);
-  int frequency_index =  transposed_mode_interval % 12;
-  float slider_bound = frequencies[ frequency_index ] / pow(2, oscillator_octave + octave_multiplier);
-  return slider_bound;
+float calculateSliderBound(int sliderNumber, int upperOrLower) {
+  int transposedModeInterval = modes[currentMode][sliderNumber - 1][upperOrLower] + currentTranspose;
+  int octaveMultiplier;
+  if (transposedModeInterval >= 24) {
+    octaveMultiplier = 0;
+  } else if (transposedModeInterval >= 12) {
+    octaveMultiplier = 1;
+  } else {
+    octaveMultiplier = 2;
+  }
+  int frequencyIndex =  transposedModeInterval % 12;
+  float sliderBound = frequencies[ frequencyIndex ] / pow(2, octaveNumber + octaveMultiplier);
+  return sliderBound;
 }
 
-
-// THIS IS FOR CHROMATIC, 4THS
-//
-//void updateSliders() {
-//  slider1 = analogRead(SLIDER1);
-//  slider2 = analogRead(SLIDER2);
-//  slider3 = analogRead(SLIDER3);
-//  slider4 = analogRead(SLIDER4);
-//
-//  // Map the sliders to specific starting notes and intervals
-//  float osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
-//  float osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
-//  float osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
-//  float osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
-//
-//  voice1a.frequency(osc1freq);
-//  voice2a.frequency(osc2freq);
-//  voice3a.frequency(osc3freq);
-//  voice4a.frequency(osc4freq);
-//
-////  Serial.println(oscillatorDetuneAmount);
-//
-//  if (oscillatorDetuneAmount >= 0) {
-//    voice1b.frequency(osc1freq + oscillatorDetuneAmount * osc1freq);
-//    voice2b.frequency(osc2freq + oscillatorDetuneAmount * osc2freq);
-//    voice3b.frequency(osc3freq + oscillatorDetuneAmount * osc3freq);
-//    voice4b.frequency(osc4freq + oscillatorDetuneAmount * osc4freq);
-//  } else {
-//    voice1b.frequency(osc1freq + (oscillatorDetuneAmount * osc1freq) / 2);
-//    voice2b.frequency(osc2freq + (oscillatorDetuneAmount * osc2freq) / 2);
-//    voice3b.frequency(osc3freq + (oscillatorDetuneAmount * osc3freq) / 2);
-//    voice4b.frequency(osc4freq + (oscillatorDetuneAmount * osc4freq) / 2);
-//  }
-//
-//
-//}
-
-
-void updateTonebank() {
-  // TONEBANK ROTARY CHECK
-  if( toneBankLastChecked == 0 ) {
-    toneBankLastChecked = millis() + ROTARY_REFRESH_RATE;
+void updateMode() {
+  // MODE ROTARY CHECK
+  if( modeLastChecked == 0 ) {
+    modeLastChecked = millis() + ROTARY_REFRESH_RATE;
   }
-  if( millis() - toneBankLastChecked > ROTARY_REFRESH_RATE ) {
-    
+  if( millis() - modeLastChecked > ROTARY_REFRESH_RATE ) {
     // We are returning 4,5,6,7,8,9 from the rotary switch, so just subtract 4 from each result to get 0 - 5
-    tonebankNumber = rotaryTurned(TONEBANK_ROTARY_PIN) - 4;
+    currentMode = rotaryTurned(MODE_ROTARY_PIN) - 4;
+  }
+}
 
-    voiceaWaveform = TONEBANK[tonebankNumber][0];
-    voicebWaveform = TONEBANK[tonebankNumber][1];
-    tonebankEffect = TONEBANK[tonebankNumber][2];
-    
+void updateWaveforms(int tonebankKnob) {
+  if( tonebankLastChecked == 0 ) {
+    tonebankLastChecked = millis() + ROTARY_REFRESH_RATE; 
+  }
+  if( millis() - tonebankLastChecked > ROTARY_REFRESH_RATE ) {
+    tonebankNumber = returnTonebankFromPot(tonebankKnob);
     if ( oldTonebankNumber != tonebankNumber ) {
       Serial.println(tonebankNumber);
+      
+      voiceaWaveform = TONEBANK[tonebankNumber][0];
+      voicebWaveform = TONEBANK[tonebankNumber][1];
+  
       voice1a.begin( voiceaWaveform );
       voice2a.begin( voiceaWaveform );
       voice3a.begin( voiceaWaveform );
@@ -415,11 +311,13 @@ void updateTonebank() {
       voice2b.begin( voicebWaveform );
       voice3b.begin( voicebWaveform );
       voice4b.begin( voicebWaveform );
+      
+      oldTonebankNumber = tonebankNumber;
     }
-    oldTonebankNumber = tonebankNumber;
-    toneBankLastChecked = millis();
+    tonebankLastChecked = millis();
   }
 }
+
 
 void updateTranspose() {
   // TRANSPOSE ROTARY CHECK
@@ -427,31 +325,24 @@ void updateTranspose() {
     transposeLastChecked = millis() + ROTARY_REFRESH_RATE; 
   }
   if( millis() - transposeLastChecked > ROTARY_REFRESH_RATE ) {
-    current_transpose = rotaryTurned(TRANSPOSE_ROTARY_PIN);
-    old_transpose = current_transpose;
+    currentTranspose = rotaryTurned(TRANSPOSE_ROTARY_PIN);
+    oldTranspose = currentTranspose;
     transposeLastChecked = millis();
   }
 }
 
 
 
-
-
-
-void updateFilters(int filterFrequency, int filterResonance) {
+void updateFilters(int filterFrequency) {
 
     int filterFrequencyMapped = map(filterFrequency, 0, 1023, 0, 22000);
-    int filterResonanceMapped = mapfloat(filterResonance, 0, 1023, 1, 5);
+//    int filterResonanceMapped = mapfloat(filterResonance, 0, 1023, 1, 5);
   
     voice1filter.frequency(filterFrequencyMapped);
     voice2filter.frequency(filterFrequencyMapped);
     voice3filter.frequency(filterFrequencyMapped);
     voice4filter.frequency(filterFrequencyMapped);
 
-    voice1filter.resonance(filterResonanceMapped);
-    voice2filter.resonance(filterResonanceMapped);
-    voice3filter.resonance(filterResonanceMapped);
-    voice4filter.resonance(filterResonanceMapped);
 }
 
 
