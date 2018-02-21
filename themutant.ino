@@ -167,10 +167,11 @@ const int TONEBANK_ROTARY_PIN = A17;
 const int TRANSPOSE_ROTARY_PIN = A16;
 long toneBankLastChecked = 0;
 long transposeLastChecked = 0;
+int current_transpose = 0;
 int newScale;
 
 //Oscillator Intervals and Ranges
-int oscillator_octave = 2;
+int oscillator_octave = 4;
 int oscillator_range = 5;
 int oscillator_interval = 5; // in half steps (5 => 4ths, 7 => 5ths)
 int slider1, slider2, slider3, slider4;
@@ -184,8 +185,24 @@ float warbleAmount, bellowsAmount;
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
-const float scales[12] ={16.35 * 2, 17.32 * 2, 18.35 * 2, 19.45 * 2, 20.60 * 2, 21.83 * 2, 23.12 * 2, 24.50 * 2, 25.96 * 2, 27.50 * 2, 29.14 * 2, 30.87 * 2};
-int oldScale = scales[0];
+const float frequencies[12] = {4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13};
+int old_transpose = 0; // I don't remember what this is doing.
+
+// Initialize Modes
+// C C# D D# E F F# G G# A A# B
+// 0 1  2 3  4 5 6  7 8  9 10 11
+// These modes are based off of the root C, which can be transposed later.
+const int modes[6][4][2] = 
+{
+  {{ 0, 2 }, { 2, 4 }, { 7, 9 },{ 9, 11 }},         // Mode 1 {{1|C,2|D},{2|D,3|E},{5|G,6|A},{6|A,8|C}}  PENTATONIC A
+  {{ 9, 12 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},   // Mode 2 {{6|A,8|C},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  PENTATONIC B
+  {{ 0, 5 }, { 7, 9 }, { 9, 11 },{ 11, 12 }},       // Mode 3 {{1|C,4|F},{5|G,6|A},{6|A,7|B},{7|B,8|C}}  ALTERNATIVE
+  {{ 7, 9 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},    // Mode 4 {{5|G,6|A},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  STILL LIFE
+  {{ 5, 7 }, { 12, 14 }, { 16, 17 },{ 19, 21 }},    // Mode 5 {{4|F,5|G},{1|C,2|D},{3|E,4|F},{5|G,6|A}}  SURFER
+  {{ 0, 12 }, { 0, 12 }, { 0, 12 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
+};
+
+
 
 // Initialize Envelope
 int droneMode;

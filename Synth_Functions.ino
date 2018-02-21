@@ -67,9 +67,6 @@ void initializeOscillators() {
   voice4b.begin(1,1,WAVEFORM_SQUARE);
 
   masterLFO.begin(1,1,WAVEFORM_SINE);
-
-
-
   
 }
 
@@ -181,7 +178,7 @@ void updateKnobs() {
   updateNoise(knob4);
   updateOscillatorRatio(knob5);
   updateOscillatorDetune(knob6);
-  updateEffect(footpedal);
+//  updateEffect(footpedal);
   
 }
 
@@ -302,12 +299,10 @@ void updateOscillatorRatio(int knobValue){
 
 void updateNoise(int noiseLevel) {
     float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
-      
     voice1n.amplitude(noiseLevelMapped);
     voice2n.amplitude(noiseLevelMapped);
     voice3n.amplitude(noiseLevelMapped);
     voice4n.amplitude(noiseLevelMapped);
-    
 }
 
 void updateSliders() {
@@ -317,17 +312,15 @@ void updateSliders() {
   slider4 = analogRead(SLIDER4);
 
   // Map the sliders to specific starting notes and intervals
-  float osc1freq = mapfloat(slider1, 0, 1023, scales [ ((newScale) % 12) ] * pow(2, oscillator_octave + newScale / 12), scales [ ((newScale + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_range) / 12));
-  float osc2freq = mapfloat(slider2, 0, 1023, scales [ ((newScale + oscillator_interval) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval) / 12), scales [ ((newScale + oscillator_interval + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval + oscillator_range) / 12));
-  float osc3freq = mapfloat(slider3, 0, 1023, scales [ ((newScale + oscillator_interval * 2) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2) / 12), scales [ ((newScale + oscillator_interval * 2 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 2 + oscillator_range) / 12));
-  float osc4freq = mapfloat(slider4, 0, 1023, scales [ ((newScale + oscillator_interval * 3) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3) / 12), scales [ ((newScale + oscillator_interval * 3 + oscillator_range) % 12) ] * pow(2, oscillator_octave + (newScale + oscillator_interval * 3 + oscillator_range) / 12));
+  float osc1freq = mapfloat(slider1, 0, 1023, calculateSliderBound(1, 0), calculateSliderBound(1, 1));
+  float osc2freq = mapfloat(slider2, 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
+  float osc3freq = mapfloat(slider3, 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
+  float osc4freq = mapfloat(slider4, 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
 
   voice1a.frequency(osc1freq);
   voice2a.frequency(osc2freq);
   voice3a.frequency(osc3freq);
   voice4a.frequency(osc4freq);
-
-//  Serial.println(oscillatorDetuneAmount);
 
   if (oscillatorDetuneAmount >= 0) {
     voice1b.frequency(osc1freq + oscillatorDetuneAmount * osc1freq);
@@ -341,7 +334,17 @@ void updateSliders() {
     voice4b.frequency(osc4freq + (oscillatorDetuneAmount * osc4freq) / 2);
   }
 
+}
 
+
+float calculateSliderBound(int slider_number, int upper_or_lower) {
+  int current_mode = 5; // THIS WILL BE CHANGED BASED ON ONE OF THE ROTARY KNOBS
+//  int current_transpose = 1; // THIS WILL BE CHANGED BASED ON ONE OF THE ROTARY KNOBS
+  int transposed_mode_interval = modes[current_mode][slider_number - 1][upper_or_lower] + current_transpose;
+  int octave_multiplier = (transposed_mode_interval >= 12) ? (-1) : (0);
+  int frequency_index =  transposed_mode_interval % 12;
+  float slider_bound = frequencies[ frequency_index ] / pow(2, oscillator_octave + octave_multiplier);
+  return slider_bound;
 }
 
 
@@ -382,8 +385,8 @@ void updateTranspose() {
     transposeLastChecked = millis() + ROTARY_REFRESH_RATE; 
   }
   if( millis() - transposeLastChecked > ROTARY_REFRESH_RATE ) {
-    newScale = rotaryTurned(TRANSPOSE_ROTARY_PIN);
-    oldScale = newScale;
+    current_transpose = rotaryTurned(TRANSPOSE_ROTARY_PIN);
+    old_transpose = current_transpose;
     transposeLastChecked = millis();
   }
 }
