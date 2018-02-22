@@ -1,62 +1,57 @@
-
-
 #include <Audio.h>
 #include <Wire.h>
 #include <Bounce.h>
 
 // GUItool: begin automatically generated code
-AudioSynthNoiseWhite     voice2n;        //xy=284,645.6666870117188
-AudioSynthWaveform       voice1a;        //xy=285,411
-AudioSynthNoiseWhite     voice1n;        //xy=285,487
-AudioSynthWaveform       voice3a;        //xy=284,737.3333435058594
-AudioSynthWaveform       voice3b;        //xy=284,779.3333435058594
-AudioSynthWaveform       voice2b;        //xy=285,608.6666870117188
-AudioSynthWaveform       voice1b;        //xy=286,448
-AudioSynthWaveform       voice2a;        //xy=286,568.6666870117188
-AudioSynthNoiseWhite     voice3n;        //xy=285,821.3333435058594
-AudioSynthNoiseWhite     voice4n;        //xy=284.6666564941406,1042.1429026126862
-AudioSynthWaveform       voice4b;        //xy=285.6666564941406,998.1429026126862
-AudioSynthWaveform       voice4a;        //xy=286.6666564941406,957.1429026126862
-AudioMixer4              voice1mix;      //xy=434,433
-AudioSynthWaveformDc     voice1env;      //xy=434,489
-AudioMixer4              voice2mix;      //xy=434,588.6666870117188
-AudioSynthWaveformDc     voice2env;      //xy=434,648.6666870117188
-AudioMixer4              voice3mix;      //xy=436,762.3333435058594
-AudioSynthWaveformDc     voice3env;      //xy=437,822.3333435058594
-AudioSynthWaveformDc     voice4env;      //xy=437.6666564941406,1037.1429026126862
-AudioMixer4              voice4mix;      //xy=439.6666564941406,978.1429026126862
-AudioEffectMultiply      voice4multiply; //xy=626.2380790710449,1008.0000705718994
-AudioSynthWaveformDc     voice4filterenv; //xy=628.2380790710449,1042.0000705718994
-AudioEffectMultiply      voice3multiply; //xy=633.9999771118164,806.3333549499512
-AudioSynthWaveformDc     voice3filterenv; //xy=636.9999771118164,840.3333549499512
-AudioMixer4              voice3filterModMixer;         //xy=638.0951919555664,894.0952186584473
-AudioMixer4              voice4filterModMixer;         //xy=639.3650512695312,1092.03173828125
-AudioEffectMultiply      voice1multiply; //xy=645.6666870117188,431.22224283218384
-AudioSynthWaveformDc     voice1filterenv; //xy=646.6666870117188,468.22224283218384
-AudioMixer4              voice1filterModMixer;         //xy=647.2221984863281,522.825439453125
-AudioEffectMultiply      voice2multiply; //xy=648.9999771118164,627.6666984558105
-AudioSynthWaveformDc     voice2filterenv; //xy=650.9999771118164,665.6666984558105
-AudioSynthWaveform       masterLFO;      //xy=654.0477142333984,383.3333110809326
-AudioMixer4              voice2filterModMixer;         //xy=655.3174133300781,718.2221984863281
-AudioFilterStateVariable voice1filter;   //xy=894,462
-AudioFilterStateVariable voice2filter;   //xy=899,630.6666870117188
-AudioFilterStateVariable voice3filter;   //xy=902,807.3333435058594
-AudioFilterStateVariable voice4filter;   //xy=905.6666641235352,977.0000553131104
-AudioMixer4              oscillatorMixer;      //xy=1113.6667098999023,473.3333306312561
-AudioMixer4              masterMixer;         //xy=1118.4166717529297,545.4999809265137
-AudioEffectDelay         masterDelay;         //xy=1119.6666717529297,715.3333435058594
-AudioFilterStateVariable delayFilter;        //xy=1131.2500457763672,617.5000247955322
-AudioOutputI2S           i2s1;           //xy=1362.5000534057617,645.1666922569275
+AudioSynthNoiseWhite     voice2n;        //xy=122,332
+AudioSynthWaveform       voice1a;        //xy=123,98
+AudioSynthWaveform       voice3a;        //xy=122,424
+AudioSynthNoiseWhite     voice1n;        //xy=123,174
+AudioSynthWaveform       voice3b;        //xy=122,466
+AudioSynthWaveform       voice2b;        //xy=123,295
+AudioSynthWaveform       voice1b;        //xy=124,135
+AudioSynthNoiseWhite     voice4n;        //xy=122,729
+AudioSynthWaveform       voice2a;        //xy=124,255
+AudioSynthNoiseWhite     voice3n;        //xy=123,508
+AudioSynthWaveform       voice4b;        //xy=123,685
+AudioSynthWaveform       voice4a;        //xy=124,644
+AudioMixer4              voice1mix;      //xy=272,120
+AudioSynthWaveformDc     voice1env;      //xy=272,176
+AudioMixer4              voice2mix;      //xy=272,275
+AudioSynthWaveformDc     voice2env;      //xy=272,335
+AudioMixer4              voice3mix;      //xy=274,449
+AudioSynthWaveformDc     voice3env;      //xy=275,509
+AudioSynthWaveformDc     voice4env;      //xy=275,724
+AudioMixer4              voice4mix;      //xy=277,665
+AudioEffectMultiply      voice4multiply; //xy=464,695
+AudioSynthWaveformDc     voice4filterenv; //xy=466,729
+AudioEffectMultiply      voice3multiply; //xy=471,493
+AudioSynthWaveformDc     voice3filterenv; //xy=474,527
+AudioMixer4              voice3filterModMixer; //xy=476,581
+AudioMixer4              voice4filterModMixer; //xy=477,779
+AudioEffectMultiply      voice1multiply; //xy=483,118
+AudioSynthWaveformDc     voice1filterenv; //xy=484,155
+AudioMixer4              voice1filterModMixer; //xy=485,209
+AudioEffectMultiply      voice2multiply; //xy=486,314
+AudioSynthWaveformDc     voice2filterenv; //xy=488,352
+AudioSynthWaveform       masterLFO;      //xy=492,70
+AudioMixer4              voice2filterModMixer; //xy=493,405
+AudioFilterStateVariable voice1filter;   //xy=732,149
+AudioFilterStateVariable voice2filter;   //xy=737,317
+AudioFilterStateVariable voice3filter;   //xy=740,494
+AudioFilterStateVariable voice4filter;   //xy=743,664
+AudioMixer4              oscillatorMixer; //xy=951,160
+AudioOutputI2S           i2s1;           //xy=1200,332
 AudioConnection          patchCord1(voice2n, 0, voice2mix, 2);
 AudioConnection          patchCord2(voice1a, 0, voice1mix, 0);
-AudioConnection          patchCord3(voice1n, 0, voice1mix, 2);
-AudioConnection          patchCord4(voice3a, 0, voice3mix, 0);
+AudioConnection          patchCord3(voice3a, 0, voice3mix, 0);
+AudioConnection          patchCord4(voice1n, 0, voice1mix, 2);
 AudioConnection          patchCord5(voice3b, 0, voice3mix, 1);
 AudioConnection          patchCord6(voice2b, 0, voice2mix, 1);
 AudioConnection          patchCord7(voice1b, 0, voice1mix, 1);
-AudioConnection          patchCord8(voice2a, 0, voice2mix, 0);
-AudioConnection          patchCord9(voice3n, 0, voice3mix, 2);
-AudioConnection          patchCord10(voice4n, 0, voice4mix, 2);
+AudioConnection          patchCord8(voice4n, 0, voice4mix, 2);
+AudioConnection          patchCord9(voice2a, 0, voice2mix, 0);
+AudioConnection          patchCord10(voice3n, 0, voice3mix, 2);
 AudioConnection          patchCord11(voice4b, 0, voice4mix, 1);
 AudioConnection          patchCord12(voice4a, 0, voice4mix, 0);
 AudioConnection          patchCord13(voice1mix, 0, voice1multiply, 0);
@@ -87,14 +82,11 @@ AudioConnection          patchCord37(voice1filter, 0, oscillatorMixer, 0);
 AudioConnection          patchCord38(voice2filter, 0, oscillatorMixer, 1);
 AudioConnection          patchCord39(voice3filter, 0, oscillatorMixer, 2);
 AudioConnection          patchCord40(voice4filter, 0, oscillatorMixer, 3);
-AudioConnection          patchCord41(oscillatorMixer, 0, masterMixer, 0);
-AudioConnection          patchCord42(masterMixer, masterDelay);
-AudioConnection          patchCord43(masterMixer, 0, i2s1, 0);
-AudioConnection          patchCord44(masterMixer, 0, i2s1, 1);
-AudioConnection          patchCord45(masterDelay, 0, delayFilter, 0);
-AudioConnection          patchCord46(delayFilter, 0, masterMixer, 3);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1353,689
+AudioConnection          patchCord41(oscillatorMixer, 0, i2s1, 0);
+AudioConnection          patchCord42(oscillatorMixer, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=1191,376
 // GUItool: end automatically generated code
+
 
 
 // Sets constants for Knobs and Sliders
@@ -110,6 +102,7 @@ const int SLIDER2 = A14;
 const int SLIDER3 = A12;
 const int SLIDER4 = A13;
 const int FOOTPEDAL = A20;
+const int FLOATINGPOINT = A11;
 const int SWITCHLEFTBOTTOM = 30;
 const int SWITCHLEFTMIDDLE = 29;
 const int SWITCHLEFTTOP = 7;
@@ -117,23 +110,22 @@ const int SWITCHRIGHTBOTTOM = 28;
 const int SWITCHRIGHTMIDDLE = 27;
 const int SWITCHRIGHTTOP = 26;
 
-// Effects Constants
-const int TREMOLO = 0;
-const int WARBLE = 1;
-const int DELAY = 2;
-const int BELLOWS = 3;
 
-const int TONEBANK[10][2] = {  
-   {WAVEFORM_SQUARE, WAVEFORM_SQUARE},
-   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH},
-   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH},
-   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE},
-   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH},
-   {WAVEFORM_SINE, WAVEFORM_SAWTOOTH},
-   {WAVEFORM_SINE, WAVEFORM_SQUARE},
-   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE},
-   {WAVEFORM_SINE, WAVEFORM_TRIANGLE},
-   {WAVEFORM_SINE, WAVEFORM_SINE} 
+
+const int TONEBANK[13][3] = {  
+   {WAVEFORM_SQUARE, WAVEFORM_SQUARE, 0},
+   {WAVEFORM_SQUARE, WAVEFORM_SAWTOOTH, 0},
+   {WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH, 0},
+   {WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, 0},
+   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH, 0},
+   {WAVEFORM_TRIANGLE, WAVEFORM_SAWTOOTH, 170},
+   {WAVEFORM_SINE, WAVEFORM_SAWTOOTH, 0},
+   {WAVEFORM_SINE, WAVEFORM_SQUARE, 0},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, 0},
+   {WAVEFORM_TRIANGLE, WAVEFORM_TRIANGLE, 70},
+   {WAVEFORM_SINE, WAVEFORM_TRIANGLE, 0},
+   {WAVEFORM_SINE, WAVEFORM_SINE, 0},
+   {WAVEFORM_SINE, WAVEFORM_SINE, 70}
 };
 
 // Tonebank Constants
@@ -147,14 +139,13 @@ int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
 const int notePins[4] = {0,1,24,25};
 const int indicatorLeds[4] = {6,2,8,4};
 //int btnState[4];
-int channelOn[4] = {false, false, false, false}; // I don't understand why this solves the envelope problem, but it does
+int channelOn[4] = {false, false, false, false}; // I don't know why he chose int here.
 int envelopeOpen[4] = {false, false, false, false};
-
+int notePlaying[4] = {false, false, false, false};
 
 // Tamboura Stuff
-unsigned long previousTambouraMillis = 0;        // will store last time LED was updated
-unsigned long tambouraInterval = 10000;
-
+long tambouraPreviousMillis[4] = {0, 0, 0, 0};
+long randomNotePlayInterval[4] = {random(2000, 7000),random(2000, 7000),random(2000, 7000),random(2000, 7000)};
 
 // Initialize Buttons
 Bounce noteBounce[] = {
@@ -171,19 +162,19 @@ const int MODE_ROTARY_PIN = A17;
 const int TRANSPOSE_ROTARY_PIN = A16;
 long modeLastChecked = 0;
 long transposeLastChecked = 0;
-int oldTranspose = 0;
 long tonebankLastChecked = 0;
 long octaveLastChecked = 0;
+int oldTranspose = 0;
 int currentTranspose = 0;
 int currentMode = 0;
 int newScale;
 int slider1, slider2, slider3, slider4;
+bool footpedalIsInserted = false;
 
 // Initialize the Tonebank variables
 // I'd like to put volume, octave, and other variables in here for more consistency
-int oldTonebankNumber, tonebankNumber, oldOctaveNumber, octaveNumber, voiceaWaveform, voicebWaveform;
+int oldTonebankNumber, tonebankNumber, oldOctaveNumber, octaveNumber, voiceaWaveform, voicebWaveform, noiseLevel;
 
-float warbleAmount, bellowsAmount;
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
@@ -200,26 +191,22 @@ const int modes[6][4][2] =
   {{ 0, 5 }, { 7, 9 }, { 9, 11 },{ 11, 12 }},       // Mode 3 {{1|C,4|F},{5|G,6|A},{6|A,7|B},{7|B,8|C}}  ALTERNATIVE
   {{ 7, 9 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},    // Mode 4 {{5|G,6|A},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  STILL LIFE
   {{ 5, 7 }, { 12, 14 }, { 16, 17 },{ 19, 21 }},    // Mode 5 {{4|F,5|G},{1|C,2|D},{3|E,4|F},{5|G,6|A}}  SURFER
-  {{ 0, 12 }, { 0, 12 }, { 12, 24 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
+  {{ 7, 12 }, { 12, 24 }, { 12, 24 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
 };
 
 
 // Initialize Envelope
-int droneMode;
+int droneMode, previousDroneMode;
 int attackTime, decayTime, releaseTime;
 int filterAttackTime, filterDecayTime, filterReleaseTime;
 float sustainLevel;
 float filterSustainLevel;
 bool noteTrigFlag[4];
 unsigned long attackWait[4];
-float oscillatorDetuneAmount;
-
-
-// Initialize "Bellows"
+double oscillatorDetuneAmount;
 const int lengthIntervalFilter = 30;
 unsigned beginningFilterInterval, currentMillis, bellowsPressureMapped;
-float currentBellowsPressure = 0;
-float lastBellowsPressure = 0;
+float warbleAmount = 0;
 const float BELLOWS_RELEASE_CONSTANT = .005;
 const float BELLOWS_FILL_CONSTANT = .6;
 
@@ -229,7 +216,9 @@ void setup() {
   initializeTeensyAudio();
   initializeOscillators();
   initializeMixersandFilters();
-  flashRebootLights(60);
+  flashRebootLights(50);
+  checkForFootpedal();
+  randomSeed(analogRead(FLOATINGPOINT));
 }
 
 void loop() {
@@ -242,7 +231,6 @@ void loop() {
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
   updateIndicators(); // 4 Indicator Leds
-  
 }
 
 

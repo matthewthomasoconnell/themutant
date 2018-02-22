@@ -18,6 +18,9 @@ void initializePins() {
   pinMode(26, INPUT_PULLUP);
   pinMode(27, INPUT_PULLUP);
   pinMode(28, INPUT_PULLUP);
+
+  // FOOTPEDAL
+  pinMode(FOOTPEDAL, INPUT_PULLUP);
   
 }
 
@@ -51,6 +54,29 @@ void flashRebootLights(int speed) {
     i++;
   }
 }
+
+
+void updateKnobs() {
+  knob1 = analogRead(KNOB1);
+  knob2 = analogRead(KNOB2);
+  knob3 = analogRead(KNOB3);
+  knob4 = analogRead(KNOB4);
+  knob5 = analogRead(KNOB5);
+  knob6 = analogRead(KNOB6);
+  knob7 = analogRead(KNOB7);
+  footpedal = analogRead(FOOTPEDAL);
+
+  updateFilters(knob1);
+  updateWaveforms(knob2);
+  updateOscillatorRatio(knob3);
+  updateOctave(knob4);
+  updateOscillatorDetune(knob5);
+  updateLFO(knob6, knob7);
+  if (footpedalIsInserted) {
+    updateWarble(footpedal);
+  }
+}
+
 
 // Turn on the waveforms - This is arbitrary since it will be changed in the loop
 void initializeOscillators() {
@@ -103,7 +129,6 @@ void initializeMixersandFilters() {
   voice4filterModMixer.gain(0,1);
   voice4filterModMixer.gain(1,0);
 
-  masterMixer.gain(0,1);
 
   voice1filter.resonance(2);
   voice2filter.resonance(2);
@@ -134,18 +159,22 @@ void stopNote(int i) {
     voice1filterenv.amplitude(-1, filterReleaseTime);
     voice1env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
+//    usbMIDI.sendNoteOff(x, 0, 1);
   } else if (i == 1) {
     voice2filterenv.amplitude(-1, filterReleaseTime);
     voice2env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
+//    usbMIDI.sendNoteOff(x, 0, 1);
   } else if (i == 2) {
     voice3filterenv.amplitude(-1, filterReleaseTime);
     voice3env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
+//    usbMIDI.sendNoteOff(x, 0, 1);
   } else if (i == 3) {
     voice4filterenv.amplitude(-1, filterReleaseTime);
     voice4env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
+//    usbMIDI.sendNoteOff(x, 0, 1);
   }
 }
 
@@ -154,45 +183,33 @@ void startNote(int i) {
     voice1filterenv.amplitude(1,filterAttackTime);
     voice1env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
+//    usbMIDI.sendNoteOn(x, 99, 1);
   } else if (i == 1) {
     voice2filterenv.amplitude(1,filterAttackTime);
     voice2env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
+//    usbMIDI.sendNoteOn(x, 99, 1);
   } else if (i == 2) {
     voice3filterenv.amplitude(1,filterAttackTime);
     voice3env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
+//    usbMIDI.sendNoteOn(x, 99, 1);
   } else if (i == 3) {
     voice4filterenv.amplitude(1,filterAttackTime);
     voice4env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
+//    usbMIDI.sendNoteOn(x, 99, 1);
   }
 }
 
-void updateKnobs() {
-  knob1 = analogRead(KNOB1);
-  knob2 = analogRead(KNOB2);
-  knob3 = analogRead(KNOB3);
-  knob4 = analogRead(KNOB4);
-  knob5 = analogRead(KNOB5);
-  knob6 = analogRead(KNOB6);
-  knob7 = analogRead(KNOB7);
-  footpedal = analogRead(FOOTPEDAL);
-
-  updateFilters(knob1);
-  updateOctave(knob2);
-  updateNoise(knob4);
-  updateOscillatorRatio(knob5);
-  updateOscillatorDetune(knob6);
-  updateWaveforms(knob7);
-  
-//  updateEffect(footpedal);
+void updateOscillatorDetune(int knobValue){
+  oscillatorDetuneAmount = mapdouble(knobValue, 0, 1023, -100, 100);
+  oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
+//  Serial.println(warbleAmount);
 }
 
-
-void updateOscillatorDetune(int knobValue){
-  oscillatorDetuneAmount = mapfloat(knobValue, 0, 1023, -1, 1);
-  oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
+void updateWarble(int footpedalValue) {
+    warbleAmount = mapdouble(footpedal, 0, 1023, -3, 3);
 }
 
 void updateOctave(int tonebankKnob) {
@@ -202,7 +219,7 @@ void updateOctave(int tonebankKnob) {
   if( millis() - octaveLastChecked > ROTARY_REFRESH_RATE ) {
     octaveNumber = returnOctaveFromPot(tonebankKnob);
     if ( oldOctaveNumber != octaveNumber ) {
-      Serial.println(octaveNumber);
+//      Serial.println(octaveNumber);
       oldOctaveNumber = octaveNumber;
     }
     octaveLastChecked = millis();
@@ -225,7 +242,7 @@ void updateOscillatorRatio(int knobValue){
 }
 
 void updateNoise(int noiseLevel) {
-    float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, .5);
+    float noiseLevelMapped = mapfloat(noiseLevel, 0, 1023, 0, 1);
     voice1n.amplitude(noiseLevelMapped);
     voice2n.amplitude(noiseLevelMapped);
     voice3n.amplitude(noiseLevelMapped);
@@ -250,15 +267,15 @@ void updateSliders() {
   voice4a.frequency(osc4freq);
 
   if (oscillatorDetuneAmount >= 0) {
-    voice1b.frequency(osc1freq + oscillatorDetuneAmount * osc1freq);
-    voice2b.frequency(osc2freq + oscillatorDetuneAmount * osc2freq);
-    voice3b.frequency(osc3freq + oscillatorDetuneAmount * osc3freq);
-    voice4b.frequency(osc4freq + oscillatorDetuneAmount * osc4freq);
+    voice1b.frequency(osc1freq + oscillatorDetuneAmount / 100 * osc1freq);
+    voice2b.frequency(osc2freq + oscillatorDetuneAmount / 100 * osc2freq);
+    voice3b.frequency(osc3freq + oscillatorDetuneAmount / 100 * osc3freq);
+    voice4b.frequency(osc4freq + oscillatorDetuneAmount / 100 * osc4freq);
   } else {
-    voice1b.frequency(osc1freq + (oscillatorDetuneAmount * osc1freq) / 2);
-    voice2b.frequency(osc2freq + (oscillatorDetuneAmount * osc2freq) / 2);
-    voice3b.frequency(osc3freq + (oscillatorDetuneAmount * osc3freq) / 2);
-    voice4b.frequency(osc4freq + (oscillatorDetuneAmount * osc4freq) / 2);
+    voice1b.frequency(osc1freq + (oscillatorDetuneAmount / 100 * osc1freq) / 2);
+    voice2b.frequency(osc2freq + (oscillatorDetuneAmount / 100 * osc2freq) / 2);
+    voice3b.frequency(osc3freq + (oscillatorDetuneAmount / 100 * osc3freq) / 2);
+    voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
   }
 
 }
@@ -297,10 +314,11 @@ void updateWaveforms(int tonebankKnob) {
   if( millis() - tonebankLastChecked > ROTARY_REFRESH_RATE ) {
     tonebankNumber = returnTonebankFromPot(tonebankKnob);
     if ( oldTonebankNumber != tonebankNumber ) {
-      Serial.println(tonebankNumber);
+//      Serial.println(tonebankNumber);
       
       voiceaWaveform = TONEBANK[tonebankNumber][0];
       voicebWaveform = TONEBANK[tonebankNumber][1];
+      noiseLevel = TONEBANK[tonebankNumber][2];
   
       voice1a.begin( voiceaWaveform );
       voice2a.begin( voiceaWaveform );
@@ -311,6 +329,8 @@ void updateWaveforms(int tonebankKnob) {
       voice2b.begin( voicebWaveform );
       voice3b.begin( voicebWaveform );
       voice4b.begin( voicebWaveform );
+
+      updateNoise(noiseLevel);
       
       oldTonebankNumber = tonebankNumber;
     }
@@ -346,87 +366,136 @@ void updateFilters(int filterFrequency) {
 }
 
 
+
+
+
+void updateDroneMode() {
+  if (digitalRead(SWITCHRIGHTBOTTOM) == LOW) {
+    droneMode = ORGAN;
+    previousDroneMode = ORGAN;
+  }
+  if (digitalRead(SWITCHRIGHTMIDDLE) == LOW) {
+    droneMode = LATCH;
+    if(previousDroneMode != LATCH) {
+      for(int i=0; i<4; i++){
+        channelOn[i] = false;
+        stopNote(i);
+      }
+    }
+    previousDroneMode = LATCH;
+  }
+  if (digitalRead(SWITCHRIGHTTOP) == LOW) {
+    droneMode = TAMBOURA;
+    if(previousDroneMode != TAMBOURA) {
+      for(int i=0; i<4; i++){
+        channelOn[i] = false;
+      }
+    }
+    beginTambouraMode();
+    previousDroneMode = TAMBOURA;
+  }
+}
+
 void updateKeys() {
   // RISING EDGE -> PUSHED BUTTON
   // FALLING EDGE -> UNPUSHED BUTTON
   for(int i=0; i<4; i++){
     if (noteBounce[i].update()){
-        if (droneMode == ORGAN) {
-          if (noteBounce[i].risingEdge()) { // Button pushed, turn on note
+      if (droneMode == ORGAN) {
+        if (noteBounce[i].risingEdge()) { // Button pushed, turn on note
+          startNote(i);
+          channelOn[i] = true;
+        } else if (noteBounce[i].fallingEdge()) { // Button unpushed
+          stopNote(i);
+          channelOn[i] = false;
+        }
+      } else if (droneMode == LATCH) {
+        if (noteBounce[i].risingEdge()) { // Button pushed
+          if (channelOn[i] == false) { // note was off, turn it on
             startNote(i);
             channelOn[i] = true;
-          } else if (noteBounce[i].fallingEdge()) { // Button unpushed
+          } else {
             stopNote(i);
             channelOn[i] = false;
           }
-        } else if (droneMode == LATCH) {
-          if (noteBounce[i].risingEdge()) { // Button pushed
-            if (channelOn[i] == false) { // note was off, turn it on
-              startNote(i);
-              channelOn[i] = true;
-            } else {
-              stopNote(i);
-              channelOn[i] = false;
-            }
-          }
-        } else if (droneMode == TAMBOURA) {
-          unsigned long currentTambouraMillis = millis();
-          if (noteBounce[i].risingEdge()) { // Button pushed
-            if (channelOn[i] == false) { // channel was off, turn it on
-              channelOn[i] = true;
-
-              // We hit the interval
-              if (currentTambouraMillis - previousTambouraMillis >= tambouraInterval) {
-                // save the last time you opened the envelope
-                previousTambouraMillis = currentTambouraMillis;
-            
-                // if the LED is off turn it on and vice-versa:
-                if (envelopeOpen[i] == false) {
-                  startNote(i);
-                }
-      
-              }            
-            } else {
-              // Turn off that channel
-              channelOn[i] = false;
-            }
+        }
+      } else if (droneMode == TAMBOURA) {
+        if (noteBounce[i].risingEdge()) { // Button pushed
+          if (channelOn[i] == false) { // channel was off, turn it on
+            channelOn[i] = true;
+          } else {
+            channelOn[i] = false;
           }
         }
+      }
     }
   }
-  
+}
+
+void beginTambouraMode() {
+  for(int i=0; i<4; i++){
+    if (channelOn[i] == true) {
+      long tambouraCurrentMillis = millis();
+      if (tambouraCurrentMillis - tambouraPreviousMillis[i] >= randomNotePlayInterval[i]) {
+        tambouraPreviousMillis[i] = tambouraCurrentMillis;
+        if (notePlaying[i] == false) {
+//          Serial.println(randomNotePlayInterval[i]);
+          startNote(i);
+          notePlaying[i] = true;
+        } else {
+          stopNote(i);
+          notePlaying[i] = false;
+        }
+      }
+    } else {
+      stopNote(i);
+    }
+  }
+}
+
+void updateLFO(int rate, int depth) {
+    float masterLFORate = mapfloat(rate, 0, 1023, 0, 20);
+    float masterLFODepth = mapfloat(depth, 0, 1023, 0, 1);
+
+    // Filter Envelope
+    voice1filterModMixer.gain(0,1 - masterLFODepth);
+    voice2filterModMixer.gain(0,1 - masterLFODepth);
+    voice3filterModMixer.gain(0,1 - masterLFODepth);
+    voice4filterModMixer.gain(0,1 - masterLFODepth);
+
+    // LFO Modulation
+    voice1filterModMixer.gain(1,masterLFODepth);
+    voice2filterModMixer.gain(1,masterLFODepth);
+    voice3filterModMixer.gain(1,masterLFODepth);
+    voice4filterModMixer.gain(1,masterLFODepth);
+
+    masterLFO.frequency(masterLFORate);
+    masterLFO.amplitude(masterLFODepth);
+    
 }
 
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
-    attackTime = 3000;
-    releaseTime = 7000;
-    filterAttackTime = 4000;
-    filterReleaseTime = 7000;
-  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 2000;
-    releaseTime = 3000;
-    filterAttackTime = 2000;
-    filterReleaseTime = 3000;
-  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
     attackTime = 10;
-    releaseTime = 500;
     filterAttackTime = 10;
-    filterReleaseTime = 50;
+    releaseTime = 500;
+    filterReleaseTime = 70;
+  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
+    attackTime = 10;
+    filterAttackTime = 100;
+    releaseTime = 1500;
+    filterReleaseTime = 1300;
+  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
+    attackTime = 2000;
+    filterAttackTime = 2000;
+    releaseTime = 3000;
+    filterReleaseTime = 3000;
   }
 }
 
-void updateDroneMode() {
-  if (digitalRead(SWITCHRIGHTBOTTOM) == LOW) {
-    droneMode = ORGAN;
-  }
-  if (digitalRead(SWITCHRIGHTMIDDLE) == LOW) {
-    droneMode = LATCH;
-  }
-  if (digitalRead(SWITCHRIGHTTOP) == LOW) {
-    droneMode = TAMBOURA;
+void checkForFootpedal() {
+  int footpedalValue = analogRead(FOOTPEDAL);
+  if (footpedalValue < 300 or footpedalValue > 400) {
+    footpedalIsInserted = true;
   }
 }
-
-
-

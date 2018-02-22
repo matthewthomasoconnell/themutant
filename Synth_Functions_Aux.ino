@@ -3,6 +3,11 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+// This is a homemade function to map to floating point numbers.
+float mapdouble(double x, double in_min, double in_max, double out_min, double out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 int rotaryTurned(int pinNum) {
    int val = 0;         // variable to store the read value
    val = analogRead(pinNum);   // read the input pin
@@ -48,26 +53,32 @@ int rotaryTurned(int pinNum) {
 
 // I know this should be automated, but the for loop was causing issues and I had to move on.
 int returnTonebankFromPot(int potValue) {
-   if( potValue < 102 ) {
+   if( potValue < 79 ) {
      return 0;
-   } else if (potValue >= 102 and potValue < 204) {
+   } else if (potValue >= 79 and potValue < 79 * 2) {
      return 1;
-   } else if (potValue >= 204 and potValue < 306) {
+   } else if (potValue >= 79 * 2 and potValue < 79 * 3) {
      return 2;
-   } else if (potValue >= 306 and potValue < 408) {
+   } else if (potValue >= 79 * 3 and potValue < 79 * 4) {
      return 3;
-   } else if (potValue >= 408 and potValue < 510) {
+   } else if (potValue >= 79 * 4 and potValue < 79 * 5) {
      return 4;
-   } else if (potValue >= 510 and potValue < 612) {
+   } else if (potValue >= 79 * 5 and potValue < 79 * 6) {
      return 5;
-   } else if (potValue >= 612 and potValue < 714) {
+   } else if (potValue >= 79 * 6 and potValue < 79 * 7) {
      return 6;
-   } else if (potValue >= 714 and potValue < 816) {
+   } else if (potValue >= 79 * 7 and potValue < 79 * 8) {
      return 7;
-   } else if (potValue >= 816 and potValue < 918) {
+   } else if (potValue >= 79 * 8 and potValue < 79 * 9) {
      return 8;
-   } else if (potValue >= 918) {
+   } else if (potValue >= 79 * 9 and potValue < 79 * 10) {
      return 9;
+   } else if (potValue >= 79 * 10 and potValue < 79 * 11) {
+     return 10;
+   } else if (potValue >= 79 * 11 and potValue < 79 * 12) {
+     return 11;
+   } else if (potValue >= 79 * 12) {
+     return 12;
    }
    return false;
 }
@@ -92,22 +103,5 @@ int returnOctaveFromPot(int potValue) {
      return 0;
    }
    return false;
-}
-
-
-
-int updateBellowsValue(int footpedalValue) {
-  currentMillis = millis();
-  if (currentMillis - beginningFilterInterval >= lengthIntervalFilter) {
-    beginningFilterInterval += lengthIntervalFilter;
-    currentBellowsPressure = (1 - BELLOWS_RELEASE_CONSTANT) * lastBellowsPressure + BELLOWS_FILL_CONSTANT * footpedalValue;
-    if (currentBellowsPressure > 3000) {
-      currentBellowsPressure = 3000; // This sets a max value for the bellows. It probably makes no mathematical sense to do it this way and then map it.
-    }
-    bellowsPressureMapped = map(currentBellowsPressure, 0, 3000, 0, 1023);
-    lastBellowsPressure = currentBellowsPressure; 
-    Serial.println(bellowsPressureMapped);
-  }
-  return bellowsPressureMapped;
 }
 
