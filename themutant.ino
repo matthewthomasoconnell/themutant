@@ -145,7 +145,7 @@ int notePlaying[4] = {false, false, false, false};
 
 // Tamboura Stuff
 long tambouraPreviousMillis[4] = {0, 0, 0, 0};
-long randomNotePlayInterval[4] = {random(2000, 7000),random(2000, 7000),random(2000, 7000),random(2000, 7000)};
+long randomNotePlayInterval[4] = {random(5000, 13000),random(5000, 13000),random(5000, 13000),random(5000, 13000)};
 
 // Initialize Buttons
 Bounce noteBounce[] = {

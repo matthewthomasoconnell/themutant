@@ -29,7 +29,7 @@ void initializeTeensyAudio() {
   AudioMemory(160);
   Serial.begin(115200);
   sgtl5000_1.enable();
-  sgtl5000_1.volume(.8);
+  sgtl5000_1.volume(1);
 }
 
 void flashRebootLights(int speed) {
@@ -38,7 +38,7 @@ void flashRebootLights(int speed) {
   digitalWrite(13, LOW);
   
   int i = 0;
-  while(i < 5) {
+  while(i < 3) {
     digitalWrite(indicatorLeds[0], HIGH);
     delay(speed);
     digitalWrite(indicatorLeds[0], LOW);
@@ -476,20 +476,20 @@ void updateLFO(int rate, int depth) {
 
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
-    attackTime = 10;
-    filterAttackTime = 10;
-    releaseTime = 500;
-    filterReleaseTime = 70;
-  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 10;
-    filterAttackTime = 100;
-    releaseTime = 1500;
-    filterReleaseTime = 1300;
-  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
-    attackTime = 2000;
-    filterAttackTime = 2000;
-    releaseTime = 3000;
+    attackTime = 3000;
+    filterAttackTime = 5000;
+    releaseTime = 5000;
     filterReleaseTime = 3000;
+  } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
+    attackTime = 3000;
+    filterAttackTime = 8000;
+    releaseTime = 5000;
+    filterReleaseTime = 3000;
+  } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
+    attackTime = 5000;
+    filterAttackTime = 8000;
+    releaseTime = 5000;
+    filterReleaseTime = 5000;
   }
 }
 
