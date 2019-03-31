@@ -1,91 +1,106 @@
 #include <Audio.h>
 #include <Wire.h>
 #include <Bounce.h>
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+
 
 // GUItool: begin automatically generated code
-AudioSynthNoiseWhite     voice2n;        //xy=122,332
-AudioSynthWaveform       voice1a;        //xy=123,98
-AudioSynthWaveform       voice3a;        //xy=122,424
-AudioSynthNoiseWhite     voice1n;        //xy=123,174
-AudioSynthWaveform       voice3b;        //xy=122,466
-AudioSynthWaveform       voice2b;        //xy=123,295
-AudioSynthWaveform       voice1b;        //xy=124,135
-AudioSynthNoiseWhite     voice4n;        //xy=122,729
-AudioSynthWaveform       voice2a;        //xy=124,255
-AudioSynthNoiseWhite     voice3n;        //xy=123,508
-AudioSynthWaveform       voice4b;        //xy=123,685
-AudioSynthWaveform       voice4a;        //xy=124,644
-AudioMixer4              voice1mix;      //xy=272,120
-AudioSynthWaveformDc     voice1env;      //xy=272,176
-AudioMixer4              voice2mix;      //xy=272,275
-AudioSynthWaveformDc     voice2env;      //xy=272,335
-AudioMixer4              voice3mix;      //xy=274,449
-AudioSynthWaveformDc     voice3env;      //xy=275,509
-AudioSynthWaveformDc     voice4env;      //xy=275,724
-AudioMixer4              voice4mix;      //xy=277,665
-AudioEffectMultiply      voice4multiply; //xy=464,695
-AudioSynthWaveformDc     voice4filterenv; //xy=466,729
-AudioEffectMultiply      voice3multiply; //xy=471,493
-AudioSynthWaveformDc     voice3filterenv; //xy=474,527
-AudioMixer4              voice3filterModMixer; //xy=476,581
-AudioMixer4              voice4filterModMixer; //xy=477,779
-AudioEffectMultiply      voice1multiply; //xy=483,118
-AudioSynthWaveformDc     voice1filterenv; //xy=484,155
-AudioMixer4              voice1filterModMixer; //xy=485,209
-AudioEffectMultiply      voice2multiply; //xy=486,314
-AudioSynthWaveformDc     voice2filterenv; //xy=488,352
-AudioSynthWaveform       masterLFO;      //xy=492,70
-AudioMixer4              voice2filterModMixer; //xy=493,405
-AudioFilterStateVariable voice1filter;   //xy=732,149
-AudioFilterStateVariable voice2filter;   //xy=737,317
-AudioFilterStateVariable voice3filter;   //xy=740,494
-AudioFilterStateVariable voice4filter;   //xy=743,664
-AudioMixer4              oscillatorMixer; //xy=951,160
-AudioOutputI2S           i2s1;           //xy=1200,332
-AudioConnection          patchCord1(voice2n, 0, voice2mix, 2);
-AudioConnection          patchCord2(voice1a, 0, voice1mix, 0);
-AudioConnection          patchCord3(voice3a, 0, voice3mix, 0);
-AudioConnection          patchCord4(voice1n, 0, voice1mix, 2);
-AudioConnection          patchCord5(voice3b, 0, voice3mix, 1);
-AudioConnection          patchCord6(voice2b, 0, voice2mix, 1);
-AudioConnection          patchCord7(voice1b, 0, voice1mix, 1);
-AudioConnection          patchCord8(voice4n, 0, voice4mix, 2);
-AudioConnection          patchCord9(voice2a, 0, voice2mix, 0);
-AudioConnection          patchCord10(voice3n, 0, voice3mix, 2);
-AudioConnection          patchCord11(voice4b, 0, voice4mix, 1);
-AudioConnection          patchCord12(voice4a, 0, voice4mix, 0);
-AudioConnection          patchCord13(voice1mix, 0, voice1multiply, 0);
-AudioConnection          patchCord14(voice1env, 0, voice1multiply, 1);
-AudioConnection          patchCord15(voice2mix, 0, voice2multiply, 0);
-AudioConnection          patchCord16(voice2env, 0, voice2multiply, 1);
-AudioConnection          patchCord17(voice3mix, 0, voice3multiply, 0);
-AudioConnection          patchCord18(voice3env, 0, voice3multiply, 1);
-AudioConnection          patchCord19(voice4env, 0, voice4multiply, 1);
-AudioConnection          patchCord20(voice4mix, 0, voice4multiply, 0);
-AudioConnection          patchCord21(voice4multiply, 0, voice4filter, 0);
-AudioConnection          patchCord22(voice4filterenv, 0, voice4filterModMixer, 0);
-AudioConnection          patchCord23(voice3multiply, 0, voice3filter, 0);
-AudioConnection          patchCord24(voice3filterenv, 0, voice3filterModMixer, 0);
-AudioConnection          patchCord25(voice3filterModMixer, 0, voice3filter, 1);
-AudioConnection          patchCord26(voice4filterModMixer, 0, voice4filter, 1);
-AudioConnection          patchCord27(voice1multiply, 0, voice1filter, 0);
-AudioConnection          patchCord28(voice1filterenv, 0, voice1filterModMixer, 0);
-AudioConnection          patchCord29(voice1filterModMixer, 0, voice1filter, 1);
-AudioConnection          patchCord30(voice2multiply, 0, voice2filter, 0);
-AudioConnection          patchCord31(voice2filterenv, 0, voice2filterModMixer, 0);
-AudioConnection          patchCord32(masterLFO, 0, voice1filterModMixer, 1);
-AudioConnection          patchCord33(masterLFO, 0, voice2filterModMixer, 1);
-AudioConnection          patchCord34(masterLFO, 0, voice3filterModMixer, 1);
-AudioConnection          patchCord35(masterLFO, 0, voice4filterModMixer, 1);
-AudioConnection          patchCord36(voice2filterModMixer, 0, voice2filter, 1);
-AudioConnection          patchCord37(voice1filter, 0, oscillatorMixer, 0);
-AudioConnection          patchCord38(voice2filter, 0, oscillatorMixer, 1);
-AudioConnection          patchCord39(voice3filter, 0, oscillatorMixer, 2);
-AudioConnection          patchCord40(voice4filter, 0, oscillatorMixer, 3);
-AudioConnection          patchCord41(oscillatorMixer, 0, i2s1, 0);
-AudioConnection          patchCord42(oscillatorMixer, 0, i2s1, 1);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1191,376
+AudioSynthWaveform       shapeLFO;       //xy=461.6666564941406,884.9999389648438
+AudioSynthWaveform       masterLFO;      //xy=461.6666564941406,934.9999389648438
+AudioSynthWaveformModulated voice1b;        //xy=682.6666564941406,686.9999389648438
+AudioSynthWaveformModulated voice4b;        //xy=680.6666564941406,1237.9999389648438
+AudioSynthWaveformModulated voice2b;        //xy=682.6666564941406,843.9999389648438
+AudioSynthWaveformModulated voice3b;        //xy=683.6666564941406,1015.9999389648438
+AudioSynthNoiseWhite     voice2n;        //xy=706.6666564941406,881.9999389648438
+AudioSynthWaveform       voice1a;        //xy=707.6666564941406,647.9999389648438
+AudioSynthWaveform       voice3a;        //xy=706.6666564941406,973.9999389648438
+AudioSynthNoiseWhite     voice1n;        //xy=707.6666564941406,723.9999389648438
+AudioSynthNoiseWhite     voice4n;        //xy=706.6666564941406,1278.9999389648438
+AudioSynthWaveform       voice2a;        //xy=708.6666564941406,804.9999389648438
+AudioSynthNoiseWhite     voice3n;        //xy=707.6666564941406,1057.9999389648438
+AudioSynthWaveform       voice4a;        //xy=708.6666564941406,1193.9999389648438
+AudioMixer4              voice1mix;      //xy=856.6666564941406,669.9999389648438
+AudioSynthWaveformDc     voice1env;      //xy=856.6666564941406,725.9999389648438
+AudioMixer4              voice2mix;      //xy=856.6666564941406,824.9999389648438
+AudioSynthWaveformDc     voice2env;      //xy=856.6666564941406,884.9999389648438
+AudioMixer4              voice3mix;      //xy=858.6666564941406,998.9999389648438
+AudioSynthWaveformDc     voice3env;      //xy=859.6666564941406,1058.9999389648438
+AudioSynthWaveformDc     voice4env;      //xy=859.6666564941406,1273.9999389648438
+AudioMixer4              voice4mix;      //xy=861.6666564941406,1214.9999389648438
+AudioEffectMultiply      voice4multiply; //xy=1048.6666564941406,1244.9999389648438
+AudioSynthWaveformDc     voice4filterenv; //xy=1050.6666564941406,1278.9999389648438
+AudioEffectMultiply      voice3multiply; //xy=1055.6666564941406,1042.9999389648438
+AudioSynthWaveformDc     voice3filterenv; //xy=1058.6666564941406,1076.9999389648438
+AudioMixer4              voice3filterModMixer; //xy=1060.6666564941406,1130.9999389648438
+AudioMixer4              voice4filterModMixer; //xy=1061.6666564941406,1328.9999389648438
+AudioEffectMultiply      voice1multiply; //xy=1067.6666564941406,667.9999389648438
+AudioSynthWaveformDc     voice1filterenv; //xy=1068.6666564941406,704.9999389648438
+AudioMixer4              voice1filterModMixer; //xy=1069.6666564941406,758.9999389648438
+AudioEffectMultiply      voice2multiply; //xy=1070.6666564941406,863.9999389648438
+AudioSynthWaveformDc     voice2filterenv; //xy=1072.6666564941406,901.9999389648438
+AudioMixer4              voice2filterModMixer; //xy=1077.6666564941406,954.9999389648438
+AudioFilterStateVariable voice1filter;   //xy=1316.6666564941406,698.9999389648438
+AudioFilterStateVariable voice2filter;   //xy=1321.6666564941406,866.9999389648438
+AudioFilterStateVariable voice3filter;   //xy=1324.6666564941406,1043.9999389648438
+AudioFilterStateVariable voice4filter;   //xy=1327.6666564941406,1213.9999389648438
+AudioMixer4              oscillatorMixer; //xy=1535.6666564941406,709.9999389648438
+AudioOutputI2S           i2s1;           //xy=1557.6666564941406,769.9999389648438
+AudioConnection          patchCord1(shapeLFO, 0, voice1b, 1);
+AudioConnection          patchCord2(shapeLFO, 0, voice2b, 1);
+AudioConnection          patchCord3(shapeLFO, 0, voice3b, 1);
+AudioConnection          patchCord4(shapeLFO, 0, voice4b, 1);
+AudioConnection          patchCord5(masterLFO, 0, voice1filterModMixer, 1);
+AudioConnection          patchCord6(masterLFO, 0, voice2filterModMixer, 1);
+AudioConnection          patchCord7(masterLFO, 0, voice3filterModMixer, 1);
+AudioConnection          patchCord8(masterLFO, 0, voice4filterModMixer, 1);
+AudioConnection          patchCord9(masterLFO, 0, voice1b, 0);
+AudioConnection          patchCord10(masterLFO, 0, voice2b, 0);
+AudioConnection          patchCord11(masterLFO, 0, voice3b, 0);
+AudioConnection          patchCord12(masterLFO, 0, voice4b, 0);
+AudioConnection          patchCord13(voice1b, 0, voice1mix, 1);
+AudioConnection          patchCord14(voice4b, 0, voice4mix, 1);
+AudioConnection          patchCord15(voice2b, 0, voice2mix, 1);
+AudioConnection          patchCord16(voice3b, 0, voice3mix, 1);
+AudioConnection          patchCord17(voice2n, 0, voice2mix, 2);
+AudioConnection          patchCord18(voice1a, 0, voice1mix, 0);
+AudioConnection          patchCord19(voice3a, 0, voice3mix, 0);
+AudioConnection          patchCord20(voice1n, 0, voice1mix, 2);
+AudioConnection          patchCord21(voice4n, 0, voice4mix, 2);
+AudioConnection          patchCord22(voice2a, 0, voice2mix, 0);
+AudioConnection          patchCord23(voice3n, 0, voice3mix, 2);
+AudioConnection          patchCord24(voice4a, 0, voice4mix, 0);
+AudioConnection          patchCord25(voice1mix, 0, voice1multiply, 0);
+AudioConnection          patchCord26(voice1env, 0, voice1multiply, 1);
+AudioConnection          patchCord27(voice2mix, 0, voice2multiply, 0);
+AudioConnection          patchCord28(voice2env, 0, voice2multiply, 1);
+AudioConnection          patchCord29(voice3mix, 0, voice3multiply, 0);
+AudioConnection          patchCord30(voice3env, 0, voice3multiply, 1);
+AudioConnection          patchCord31(voice4env, 0, voice4multiply, 1);
+AudioConnection          patchCord32(voice4mix, 0, voice4multiply, 0);
+AudioConnection          patchCord33(voice4multiply, 0, voice4filter, 0);
+AudioConnection          patchCord34(voice4filterenv, 0, voice4filterModMixer, 0);
+AudioConnection          patchCord35(voice3multiply, 0, voice3filter, 0);
+AudioConnection          patchCord36(voice3filterenv, 0, voice3filterModMixer, 0);
+AudioConnection          patchCord37(voice3filterModMixer, 0, voice3filter, 1);
+AudioConnection          patchCord38(voice4filterModMixer, 0, voice4filter, 1);
+AudioConnection          patchCord39(voice1multiply, 0, voice1filter, 0);
+AudioConnection          patchCord40(voice1filterenv, 0, voice1filterModMixer, 0);
+AudioConnection          patchCord41(voice1filterModMixer, 0, voice1filter, 1);
+AudioConnection          patchCord42(voice2multiply, 0, voice2filter, 0);
+AudioConnection          patchCord43(voice2filterenv, 0, voice2filterModMixer, 0);
+AudioConnection          patchCord44(voice2filterModMixer, 0, voice2filter, 1);
+AudioConnection          patchCord45(voice1filter, 0, oscillatorMixer, 0);
+AudioConnection          patchCord46(voice2filter, 0, oscillatorMixer, 1);
+AudioConnection          patchCord47(voice3filter, 0, oscillatorMixer, 2);
+AudioConnection          patchCord48(voice4filter, 0, oscillatorMixer, 3);
+AudioConnection          patchCord49(oscillatorMixer, 0, i2s1, 0);
+AudioConnection          patchCord50(oscillatorMixer, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=1548.6666564941406,813.9999389648438
 // GUItool: end automatically generated code
+
+
 
 
 
@@ -191,7 +206,7 @@ const int modes[6][4][2] =
   {{ 0, 5 }, { 7, 9 }, { 9, 11 },{ 11, 12 }},       // Mode 3 {{1|C,4|F},{5|G,6|A},{6|A,7|B},{7|B,8|C}}  ALTERNATIVE
   {{ 7, 9 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},    // Mode 4 {{5|G,6|A},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  STILL LIFE
   {{ 5, 7 }, { 12, 14 }, { 16, 17 },{ 19, 21 }},    // Mode 5 {{4|F,5|G},{1|C,2|D},{3|E,4|F},{5|G,6|A}}  SURFER
-  {{ 7, 12 }, { 12, 24 }, { 12, 24 },{ 0, 12 }}       // Mode 6 {{1|C,8|C},{1|C,8|C},{1|C,8|C},{1|C,8|C}}  TAMBOURA
+  {{ 0, 7 }, { 7, 12 }, { 0, 5 },{ 5, 12 }}       // Mode 6 {{1|C,5|G},{5|G,8|C},{1|C,4|F},{4|F,8|C}}  TAMBOURA
 };
 
 
@@ -232,10 +247,3 @@ void loop() {
   updateKeys(); // 4 Momentary Switches
   updateIndicators(); // 4 Indicator Leds
 }
-
-
-
-
-
-
-

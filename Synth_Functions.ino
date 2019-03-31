@@ -71,7 +71,7 @@ void updateKnobs() {
   updateOscillatorRatio(knob3);
   updateOctave(knob4);
   updateOscillatorDetune(knob5);
-  updateLFO(knob6, knob7);
+  updateFreqModLFO(knob6, knob7);
   if (footpedalIsInserted) {
     updateWarble(footpedal);
   }
@@ -81,19 +81,27 @@ void updateKnobs() {
 // Turn on the waveforms - This is arbitrary since it will be changed in the loop
 void initializeOscillators() {
   voice1a.begin(1,1,WAVEFORM_SQUARE);
-  voice1b.begin(1,1,WAVEFORM_SQUARE);
-
   voice2a.begin(1,1,WAVEFORM_SQUARE);
-  voice2b.begin(1,1,WAVEFORM_SQUARE);
-
   voice3a.begin(1,1,WAVEFORM_SQUARE);
-  voice3b.begin(1,1,WAVEFORM_SQUARE);
-
   voice4a.begin(1,1,WAVEFORM_SQUARE);
+
+
+  // Frequency-Modulated oscillators
+  voice1b.begin(1,1,WAVEFORM_SQUARE);
+  voice2b.begin(1,1,WAVEFORM_SQUARE);
+  voice3b.begin(1,1,WAVEFORM_SQUARE);
   voice4b.begin(1,1,WAVEFORM_SQUARE);
 
-  masterLFO.begin(1,1,WAVEFORM_SINE);
+  // Pro Tip: Try 4 here for more FM sounds
+  voice1b.frequencyModulation(.15);
+  voice2b.frequencyModulation(.15);
+  voice3b.frequencyModulation(.15);
+  voice4b.frequencyModulation(.15);
   
+
+  masterLFO.begin(1,1,WAVEFORM_SINE);
+  shapeLFO.begin(0,1.2,WAVEFORM_SINE); // I'm not really utilizing this.
+
 }
 
 // Turn on the Mixers
@@ -203,8 +211,15 @@ void startNote(int i) {
 }
 
 void updateOscillatorDetune(int knobValue){
-  oscillatorDetuneAmount = mapdouble(knobValue, 0, 1023, -100, 100);
+
+  // ALERT
+  // This mapping from 15 - 1023 is a hack!
+  // For some reason the pot will not go all the way to 0V, so I am putting this in until I can replace it.
+  // Serial.println(knobValue);
+  oscillatorDetuneAmount = mapdouble(knobValue, 15, 1023, -100, 100);
   oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
+
+  
 //  Serial.println(warbleAmount);
 }
 
@@ -453,7 +468,18 @@ void beginTambouraMode() {
   }
 }
 
-void updateLFO(int rate, int depth) {
+
+void updateFreqModLFO(int rate, int depth) {
+    // Pro Tip: Try 400 here for more FM sounds
+    float masterLFORate = mapfloat(rate, 0, 1023, 0, 4);
+    float masterLFODepth = mapfloat(depth, 0, 1023, 0, 1);
+
+    masterLFO.frequency(masterLFORate);
+    masterLFO.amplitude(masterLFODepth);
+}
+
+//This has been replaced by FM LFO
+void updateFilterLFO(int rate, int depth) {
     float masterLFORate = mapfloat(rate, 0, 1023, 0, 20);
     float masterLFODepth = mapfloat(depth, 0, 1023, 0, 1);
 
@@ -476,15 +502,15 @@ void updateLFO(int rate, int depth) {
 
 void updateEnvelopeMode() {
   if (digitalRead(SWITCHLEFTBOTTOM) == LOW) {
-    attackTime = 3000;
-    filterAttackTime = 5000;
+    attackTime = 500;
+    filterAttackTime = 1000;
     releaseTime = 5000;
-    filterReleaseTime = 3000;
+    filterReleaseTime = 1000;
   } else if (digitalRead(SWITCHLEFTMIDDLE) == LOW) {
-    attackTime = 3000;
-    filterAttackTime = 8000;
-    releaseTime = 5000;
-    filterReleaseTime = 3000;
+    attackTime = 1000;
+    filterAttackTime = 2000;
+    releaseTime = 2000;
+    filterReleaseTime = 1000;
   } else if (digitalRead(SWITCHLEFTTOP) == LOW) {
     attackTime = 5000;
     filterAttackTime = 8000;
