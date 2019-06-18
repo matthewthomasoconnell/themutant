@@ -195,13 +195,17 @@ int oldTonebankNumber, tonebankNumber, oldOctaveNumber, octaveNumber, voiceaWave
 // C C# D D# E F F# G G# A A# B
 const float frequencies[12] = {4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13};
 
+// Initialize Scales and Waveforms
+// C C# D D# E F F# G G# A A# B
+const int midiNotes[12] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
 // Initialize Modes
 // C C# D D# E F F# G G# A A# B
 // 0 1  2 3  4 5 6  7 8  9 10 11
 // These modes are based off of the root C, which can be transposed later.
 const int modes[6][4][2] = 
 {
-  {{ 0, 2 }, { 2, 4 }, { 7, 9 },{ 9, 11 }},         // Mode 1 {{1|C,2|D},{2|D,3|E},{5|G,6|A},{6|A,8|C}}  PENTATONIC A
+  {{ 0, 2 }, { 2, 4 }, { 7, 9 },{ 9, 12 }},         // Mode 1 {{1|C,2|D},{2|D,3|E},{5|G,6|A},{6|A,8|C}}  PENTATONIC A
   {{ 9, 12 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},   // Mode 2 {{6|A,8|C},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  PENTATONIC B
   {{ 0, 5 }, { 7, 9 }, { 9, 11 },{ 11, 12 }},       // Mode 3 {{1|C,4|F},{5|G,6|A},{6|A,7|B},{7|B,8|C}}  ALTERNATIVE
   {{ 7, 9 }, { 12, 14 }, { 14, 16 },{ 19, 21 }},    // Mode 4 {{5|G,6|A},{1|C,2|D},{2|D,3|E},{5|G,6|A}}  STILL LIFE

@@ -93,10 +93,10 @@ void initializeOscillators() {
   voice4b.begin(1,1,WAVEFORM_SQUARE);
 
   // Pro Tip: Try 4 here for more FM sounds
-  voice1b.frequencyModulation(.15);
-  voice2b.frequencyModulation(.15);
-  voice3b.frequencyModulation(.15);
-  voice4b.frequencyModulation(.15);
+  voice1b.frequencyModulation(.05);
+  voice2b.frequencyModulation(.05);
+  voice3b.frequencyModulation(.05);
+  voice4b.frequencyModulation(.05);
   
 
   masterLFO.begin(1,1,WAVEFORM_SINE);
@@ -167,22 +167,30 @@ void stopNote(int i) {
     voice1filterenv.amplitude(-1, filterReleaseTime);
     voice1env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
-//    usbMIDI.sendNoteOff(x, 0, 1);
+    // It's a midi thing - you wouldn't understand
+    int noteFrequency1 = calculateMidiBound(1, 0);
+    usbMIDI.sendNoteOff(noteFrequency1, 99, 1);
   } else if (i == 1) {
     voice2filterenv.amplitude(-1, filterReleaseTime);
     voice2env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
-//    usbMIDI.sendNoteOff(x, 0, 1);
+    // It's a midi thing - you wouldn't understand
+    int noteFrequency2 = calculateMidiBound(2, 0);
+    usbMIDI.sendNoteOff(noteFrequency2, 99, 2);
   } else if (i == 2) {
     voice3filterenv.amplitude(-1, filterReleaseTime);
     voice3env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
-//    usbMIDI.sendNoteOff(x, 0, 1);
+    // It's a midi thing - you wouldn't understand
+    int noteFrequency3 = calculateMidiBound(3, 0);
+    usbMIDI.sendNoteOff(noteFrequency3, 99, 3);
   } else if (i == 3) {
     voice4filterenv.amplitude(-1, filterReleaseTime);
     voice4env.amplitude(0,releaseTime);
     envelopeOpen[i] = false;
-//    usbMIDI.sendNoteOff(x, 0, 1);
+    // It's a midi thing - you wouldn't understand
+    int noteFrequency4 = calculateMidiBound(4, 0);
+    usbMIDI.sendNoteOff(noteFrequency4, 99, 4);
   }
 }
 
@@ -191,22 +199,30 @@ void startNote(int i) {
     voice1filterenv.amplitude(1,filterAttackTime);
     voice1env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
-//    usbMIDI.sendNoteOn(x, 99, 1);
+    // It's a midi thing - you wouldn't understand
+    int noteFrequency1 = calculateMidiBound(1, 0);
+    usbMIDI.sendNoteOn(noteFrequency1, 99, 1);
   } else if (i == 1) {
     voice2filterenv.amplitude(1,filterAttackTime);
     voice2env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
-//    usbMIDI.sendNoteOn(x, 99, 1);
+    // Midi stuff
+    int noteFrequency2 = calculateMidiBound(2, 0);
+    usbMIDI.sendNoteOn(noteFrequency2, 99, 2);
   } else if (i == 2) {
     voice3filterenv.amplitude(1,filterAttackTime);
     voice3env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
-//    usbMIDI.sendNoteOn(x, 99, 1);
+    // Midi stuff
+    int noteFrequency3 = calculateMidiBound(3, 0);
+    usbMIDI.sendNoteOn(noteFrequency3, 99, 3);
   } else if (i == 3) {
     voice4filterenv.amplitude(1,filterAttackTime);
     voice4env.amplitude(1,attackTime);
     envelopeOpen[i] = true;
-//    usbMIDI.sendNoteOn(x, 99, 1);
+    // Midi stuff
+    int noteFrequency4 = calculateMidiBound(4, 0);
+    usbMIDI.sendNoteOn(noteFrequency4, 99, 4);
   }
 }
 
@@ -218,7 +234,6 @@ void updateOscillatorDetune(int knobValue){
   // Serial.println(knobValue);
   oscillatorDetuneAmount = mapdouble(knobValue, 15, 1023, -100, 100);
   oscillatorDetuneAmount = oscillatorDetuneAmount + warbleAmount;
-
   
 //  Serial.println(warbleAmount);
 }
@@ -293,8 +308,18 @@ void updateSliders() {
     voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
   }
 
-}
+  //Midi Stuff - probably should go in a separate function
+  float osc1Bend = mapfloat(slider1, 0, 1023, 0, (calculateMidiBound(1, 1) - calculateMidiBound(1, 0)) * 8192 / 12);
+  float osc2Bend = mapfloat(slider2, 0, 1023, 0, (calculateMidiBound(2, 1) - calculateMidiBound(2, 0)) * 8192 / 12);
+  float osc3Bend = mapfloat(slider3, 0, 1023, 0, (calculateMidiBound(3, 1) - calculateMidiBound(3, 0)) * 8192 / 12);
+  float osc4Bend = mapfloat(slider4, 0, 1023, 0, (calculateMidiBound(4, 1) - calculateMidiBound(4, 0)) * 8192 / 12);
 
+  usbMIDI.sendPitchBend(osc1Bend, 1);
+  usbMIDI.sendPitchBend(osc2Bend, 2);
+  usbMIDI.sendPitchBend(osc3Bend, 3);
+  usbMIDI.sendPitchBend(osc4Bend, 4);
+  
+}
 
 float calculateSliderBound(int sliderNumber, int upperOrLower) {
   int transposedModeInterval = modes[currentMode][sliderNumber - 1][upperOrLower] + currentTranspose;
@@ -308,8 +333,27 @@ float calculateSliderBound(int sliderNumber, int upperOrLower) {
   }
   int frequencyIndex =  transposedModeInterval % 12;
   float sliderBound = frequencies[ frequencyIndex ] / pow(2, octaveNumber + octaveMultiplier);
+  
   return sliderBound;
 }
+
+int calculateMidiBound(int sliderNumber, int upperOrLower) {
+  int transposedModeInterval = modes[currentMode][sliderNumber - 1][upperOrLower] + currentTranspose;
+  int octaveMultiplier;
+  
+  if (transposedModeInterval >= 24) {
+    octaveMultiplier = 0;
+  } else if (transposedModeInterval >= 12) {
+    octaveMultiplier = 1;
+  } else {
+    octaveMultiplier = 2;
+  }
+  int noteIndex =  transposedModeInterval % 12;
+  int midiBound = midiNotes[ noteIndex ] - 12 * (octaveNumber + octaveMultiplier);
+
+  return midiBound;
+}
+
 
 void updateMode() {
   // MODE ROTARY CHECK
