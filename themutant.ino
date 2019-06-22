@@ -1,10 +1,7 @@
+#include <ResponsiveAnalogRead.h>
 #include <Audio.h>
 #include <Wire.h>
 #include <Bounce.h>
-#include <Audio.h>
-#include <Wire.h>
-#include <SPI.h>
-
 
 // GUItool: begin automatically generated code
 AudioSynthWaveform       shapeLFO;       //xy=461.6666564941406,884.9999389648438
@@ -104,7 +101,7 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=1548.6666564941406,813.99993896484
 
 
 
-// Sets constants for Knobs and Sliders
+// Sets constants for Analog Inputs Knobs and Sliders
 const int KNOB1 = A21;
 const int KNOB2 = A19;
 const int KNOB3 = A18;
@@ -112,11 +109,11 @@ const int KNOB4 = A6;
 const int KNOB5 = A7;
 const int KNOB6 = A2;
 const int KNOB7 = A3;
+const int FOOTPEDAL = A20;
 const int SLIDER1 = A15;
 const int SLIDER2 = A14;
 const int SLIDER3 = A12;
 const int SLIDER4 = A13;
-const int FOOTPEDAL = A20;
 const int FLOATINGPOINT = A11;
 const int SWITCHLEFTBOTTOM = 30;
 const int SWITCHLEFTMIDDLE = 29;
@@ -124,6 +121,25 @@ const int SWITCHLEFTTOP = 7;
 const int SWITCHRIGHTBOTTOM = 28;
 const int SWITCHRIGHTMIDDLE = 27;
 const int SWITCHRIGHTTOP = 26;
+bool footpedalIsInserted = false;
+
+
+// Analog Read Library (Maybe this should all be one array to save resources?)
+//int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
+//int slider1, slider2, slider3, slider4;
+ResponsiveAnalogRead knob1(KNOB1, true);
+ResponsiveAnalogRead knob2(KNOB2, true);
+ResponsiveAnalogRead knob3(KNOB3, true);
+ResponsiveAnalogRead knob4(KNOB4, true);
+ResponsiveAnalogRead knob5(KNOB5, true);
+ResponsiveAnalogRead knob6(KNOB6, true);
+ResponsiveAnalogRead knob7(KNOB7, true);
+ResponsiveAnalogRead footpedal(FOOTPEDAL, true);
+ResponsiveAnalogRead slider1(SLIDER1, true);
+ResponsiveAnalogRead slider2(SLIDER2, true);
+ResponsiveAnalogRead slider3(SLIDER3, true);
+ResponsiveAnalogRead slider4(SLIDER4, true);
+
 
 
 
@@ -148,7 +164,6 @@ const int ORGAN = 0;
 const int LATCH = 1;
 const int TAMBOURA = 2;
 
-int knob1, knob2, knob3, knob4, knob5, knob6, knob7, footpedal;
 
 // Initialize Buttons and Note Pins
 const int notePins[4] = {0,1,24,25};
@@ -183,13 +198,10 @@ int oldTranspose = 0;
 int currentTranspose = 0;
 int currentMode = 0;
 int newScale;
-int slider1, slider2, slider3, slider4;
-bool footpedalIsInserted = false;
 
 // Initialize the Tonebank variables
 // I'd like to put volume, octave, and other variables in here for more consistency
 int oldTonebankNumber, tonebankNumber, oldOctaveNumber, octaveNumber, voiceaWaveform, voicebWaveform, noiseLevel;
-
 
 // Initialize Scales and Waveforms
 // C C# D D# E F F# G G# A A# B
@@ -241,7 +253,7 @@ void setup() {
 }
 
 void loop() {
-  
+  updateAnalogInputs(); // This is for Responsive Analog Read library
   updateMode(); // Right Rotary Switch
   updateKnobs(); // 7 Rotary Pots
   updateSliders(); // 4 Slider Pots
@@ -250,4 +262,5 @@ void loop() {
   updateEnvelopeMode(); // Right Toggle Switch
   updateKeys(); // 4 Momentary Switches
   updateIndicators(); // 4 Indicator Leds
+  while (usbMIDI.read()){}  // Ignore Incoming Messages
 }
