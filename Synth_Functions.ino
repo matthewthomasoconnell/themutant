@@ -72,14 +72,38 @@ void updateAnalogInputs() {
 }
 
 void updateKnobs() {
-  updateFilters(knob1.getValue());
-  updateWaveforms(knob2.getValue());
-  updateOscillatorRatio(knob3.getValue());
-  updateOctave(knob4.getValue());
-  updateOscillatorDetune(knob5.getValue());
-  updateFreqModLFO(knob6.getValue(), knob7.getValue());
-  if (footpedalIsInserted) {
+  if( knob1.hasChanged() ) {
+    updateFilters(knob1.getValue());
+    spreadControlChange(1, knob1.getValue());
+  }
+  if( knob2.hasChanged() ) {
+    updateWaveforms(knob2.getValue());
+    spreadControlChange(2, knob2.getValue());
+  }
+  if( knob3.hasChanged() ) {
+    updateOscillatorRatio(knob3.getValue());
+    spreadControlChange(3, knob3.getValue());
+  }
+  if( knob4.hasChanged() ) {
+    updateOctave(knob4.getValue());
+    spreadControlChange(4, knob4.getValue());
+  }
+  if( knob5.hasChanged() ) {
+    updateOscillatorDetune(knob5.getValue());
+    spreadControlChange(5, knob5.getValue());
+  }
+  if( knob6.hasChanged() || knob7.hasChanged() ) {
+    updateFreqModLFO(knob6.getValue(), knob7.getValue());
+    if( knob6.hasChanged() ) {
+      spreadControlChange(6, knob6.getValue());
+    }
+    if( knob7.hasChanged() ) {
+      spreadControlChange(7, knob7.getValue());
+    }
+  }
+  if (footpedalIsInserted && footpedal.hasChanged() ) {
     updateWarble();
+    spreadControlChange(8, footpedal.getValue());
   }
 }
 
@@ -90,7 +114,6 @@ void initializeOscillators() {
   voice2a.begin(1, 1, WAVEFORM_SQUARE);
   voice3a.begin(1, 1, WAVEFORM_SQUARE);
   voice4a.begin(1, 1, WAVEFORM_SQUARE);
-
 
   // Frequency-Modulated oscillators
   voice1b.begin(1, 1, WAVEFORM_SQUARE);
@@ -104,10 +127,8 @@ void initializeOscillators() {
   voice3b.frequencyModulation(.05);
   voice4b.frequencyModulation(.05);
 
-
   masterLFO.begin(1, 1, WAVEFORM_SINE);
   shapeLFO.begin(0, 1.2, WAVEFORM_SINE); // I'm not really utilizing this.
-
 }
 
 // Turn on the Mixers
@@ -280,51 +301,60 @@ void updateNoise(int noiseLevel) {
 }
 
 void updateSliders() {
-//  slider1 = analogRead(SLIDER1);
-//  slider2 = analogRead(SLIDER2);
-//  slider3 = analogRead(SLIDER3);
-//  slider4 = analogRead(SLIDER4);
-
-  // Map the sliders to specific starting notes and intervals
-  float osc1freq = mapfloat(slider1.getValue(), 0, 1023, calculateSliderBound(1, 0), calculateSliderBound(1, 1));
-  float osc2freq = mapfloat(slider2.getValue(), 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
-  float osc3freq = mapfloat(slider3.getValue(), 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
-  float osc4freq = mapfloat(slider4.getValue(), 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
-
-  voice1a.frequency(osc1freq);
-  voice2a.frequency(osc2freq);
-  voice3a.frequency(osc3freq);
-  voice4a.frequency(osc4freq);
-
-  if (oscillatorDetuneAmount >= 0) {
-    voice1b.frequency(osc1freq + oscillatorDetuneAmount / 100 * osc1freq);
-    voice2b.frequency(osc2freq + oscillatorDetuneAmount / 100 * osc2freq);
-    voice3b.frequency(osc3freq + oscillatorDetuneAmount / 100 * osc3freq);
-    voice4b.frequency(osc4freq + oscillatorDetuneAmount / 100 * osc4freq);
-  } else {
-    voice1b.frequency(osc1freq + (oscillatorDetuneAmount / 100 * osc1freq) / 2);
-    voice2b.frequency(osc2freq + (oscillatorDetuneAmount / 100 * osc2freq) / 2);
-    voice3b.frequency(osc3freq + (oscillatorDetuneAmount / 100 * osc3freq) / 2);
-    voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
+  if( slider1.hasChanged() ) {
+    float osc1freq = mapfloat(slider1.getValue(), 0, 1023, calculateSliderBound(1, 0), calculateSliderBound(1, 1));
+    voice1a.frequency(osc1freq);
+    if (oscillatorDetuneAmount >= 0) {
+      voice1b.frequency(osc1freq + oscillatorDetuneAmount / 100 * osc1freq); 
+    } else {
+      voice1b.frequency(osc1freq + (oscillatorDetuneAmount / 100 * osc1freq) / 2);
+    }
+    // Midi Stuff
+    float osc1Bend = mapfloat(slider1.getValue(), 0, 1023, 0, (calculateMidiBound(1, 1) - calculateMidiBound(1, 0)) * 8192 / 12);
+    usbMIDI.sendPitchBend(osc1Bend, 1);
+//    Serial.println(slider1.getValue());
   }
-
-  updateSlidersMidi();
-
+  if( slider2.hasChanged() ) {
+    float osc2freq = mapfloat(slider2.getValue(), 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
+    voice2a.frequency(osc2freq);
+    if (oscillatorDetuneAmount >= 0) {
+      voice2b.frequency(osc2freq + oscillatorDetuneAmount / 100 * osc2freq); 
+    } else {
+      voice2b.frequency(osc2freq + (oscillatorDetuneAmount / 100 * osc2freq) / 2);
+    }
+    // Midi Stuff
+    float osc2Bend = mapfloat(slider2.getValue(), 0, 1023, 0, (calculateMidiBound(2, 1) - calculateMidiBound(2, 0)) * 8192 / 12);
+    usbMIDI.sendPitchBend(osc2Bend, 2);
+//    Serial.println(slider2.getValue());
+  }
+  if( slider3.hasChanged() ) {
+    float osc3freq = mapfloat(slider3.getValue(), 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
+    voice3a.frequency(osc3freq);
+    if (oscillatorDetuneAmount >= 0) {
+      voice3b.frequency(osc3freq + oscillatorDetuneAmount / 100 * osc3freq);
+    } else {
+      voice3b.frequency(osc3freq + (oscillatorDetuneAmount / 100 * osc3freq) / 2);
+    }
+    // Midi Stuff
+    float osc3Bend = mapfloat(slider3.getValue(), 0, 1023, 0, (calculateMidiBound(3, 1) - calculateMidiBound(3, 0)) * 8192 / 12);
+    usbMIDI.sendPitchBend(osc3Bend, 3);
+//    Serial.println(slider3.getValue());
+  }
+  if( slider4.hasChanged() ) {
+    float osc4freq = mapfloat(slider4.getValue(), 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
+    voice4a.frequency(osc4freq);
+    if (oscillatorDetuneAmount >= 0) {
+      voice4b.frequency(osc4freq + oscillatorDetuneAmount / 100 * osc4freq);
+    } else {
+      voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
+    }
+    // Midi Stuff
+    float osc4Bend = mapfloat(slider4.getValue(), 0, 1023, 0, (calculateMidiBound(4, 1) - calculateMidiBound(4, 0)) * 8192 / 12);
+    usbMIDI.sendPitchBend(osc4Bend, 4);
+//    Serial.println(slider4.getValue());
+  }
 }
 
-void updateSlidersMidi() {
-
-  // This assumes that the synth is set to a max pitch bend of +12 semitones
-  float osc1Bend = mapfloat(slider1.getRawValue(), 0, 1023, 0, (calculateMidiBound(1, 1) - calculateMidiBound(1, 0)) * 8192 / 12);
-  float osc2Bend = mapfloat(slider2.getRawValue(), 0, 1023, 0, (calculateMidiBound(2, 1) - calculateMidiBound(2, 0)) * 8192 / 12);
-  float osc3Bend = mapfloat(slider3.getRawValue(), 0, 1023, 0, (calculateMidiBound(3, 1) - calculateMidiBound(3, 0)) * 8192 / 12);
-  float osc4Bend = mapfloat(slider4.getRawValue(), 0, 1023, 0, (calculateMidiBound(4, 1) - calculateMidiBound(4, 0)) * 8192 / 12);
-
-  usbMIDI.sendPitchBend(osc1Bend, 1);
-  usbMIDI.sendPitchBend(osc2Bend, 2);
-  usbMIDI.sendPitchBend(osc3Bend, 3);
-  usbMIDI.sendPitchBend(osc4Bend, 4);
-}
 
 float calculateSliderBound(int sliderNumber, int upperOrLower) {
   int transposedModeInterval = modes[currentMode][sliderNumber - 1][upperOrLower] + currentTranspose;
@@ -567,6 +597,19 @@ void updateEnvelopeMode() {
     filterReleaseTime = 5000;
   }
 }
+
+// Send an identical control change on channels 1-4
+void spreadControlChange(int controller, int rawValue) {
+  int mappedValue = map(rawValue, 0, 1023, 0, 127);
+  usbMIDI.sendControlChange(controller, mappedValue, 1);
+  usbMIDI.sendControlChange(controller, mappedValue, 2);
+  usbMIDI.sendControlChange(controller, mappedValue, 3);
+  usbMIDI.sendControlChange(controller, mappedValue, 4);
+
+//  Serial.println(controller);
+//  Serial.println(rawValue);
+}
+
 
 void checkForFootpedal() {
   int footpedalValue = analogRead(FOOTPEDAL);

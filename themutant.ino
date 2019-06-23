@@ -141,6 +141,16 @@ ResponsiveAnalogRead slider3(SLIDER3, true);
 ResponsiveAnalogRead slider4(SLIDER4, true);
 
 
+// Midi CCs
+const int MODULATION_CC = 1;
+const int BREATH_CC = 2;
+const int FOOTPEDAL_CC = 4;
+const int PORTAMENTO_CC = 5;
+const int VOLUME_CC = 7;
+const int STEREO_CC = 8;
+const int PAN_CC = 10;
+const int EXPRESSION_CC = 11;
+
 
 
 const int TONEBANK[13][3] = {  
