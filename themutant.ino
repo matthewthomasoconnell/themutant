@@ -259,10 +259,12 @@ void setup() {
   initializeMixersandFilters();
   flashRebootLights(50);
   checkForFootpedal();
+  updateKnobValues();
   randomSeed(analogRead(FLOATINGPOINT));
 }
 
 void loop() {
+  
   updateAnalogInputs(); // This is for Responsive Analog Read library
   updateMode(); // Right Rotary Switch
   updateKnobs(); // 7 Rotary Pots
