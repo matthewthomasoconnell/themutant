@@ -317,57 +317,52 @@ void updateNoise(int noiseLevel) {
 }
 
 void updateSliders() {
-  if( slider1.hasChanged() || true ) {
-    float osc1freq = mapfloat(slider1.getValue(), 0, 1023, calculateSliderBound(1, 0), calculateSliderBound(1, 1));
-    voice1a.frequency(osc1freq);
-    if (oscillatorDetuneAmount >= 0) {
-      voice1b.frequency(osc1freq + oscillatorDetuneAmount / 100 * osc1freq); 
-    } else {
-      voice1b.frequency(osc1freq + (oscillatorDetuneAmount / 100 * osc1freq) / 2);
-    }
+  float osc1freq = mapfloat(slider1.getValue(), 0, 1023, calculateSliderBound(1, 0), calculateSliderBound(1, 1));
+  float osc2freq = mapfloat(slider2.getValue(), 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
+  float osc3freq = mapfloat(slider3.getValue(), 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
+  float osc4freq = mapfloat(slider4.getValue(), 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
+  
+  voice1a.frequency(osc1freq);
+  voice2a.frequency(osc2freq);
+  voice3a.frequency(osc3freq);
+  voice4a.frequency(osc4freq);
+  
+  if (oscillatorDetuneAmount >= 0) {
+    voice1b.frequency(osc1freq + oscillatorDetuneAmount / 100 * osc1freq); 
+    voice2b.frequency(osc2freq + oscillatorDetuneAmount / 100 * osc2freq); 
+    voice3b.frequency(osc3freq + oscillatorDetuneAmount / 100 * osc3freq);
+    voice4b.frequency(osc4freq + oscillatorDetuneAmount / 100 * osc4freq);
+  } else {
+    voice1b.frequency(osc1freq + (oscillatorDetuneAmount / 100 * osc1freq) / 2);
+    voice2b.frequency(osc2freq + (oscillatorDetuneAmount / 100 * osc2freq) / 2);
+    voice3b.frequency(osc3freq + (oscillatorDetuneAmount / 100 * osc3freq) / 2);
+    voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
+  }
+
+
+  if( slider1.hasChanged() ) {
     // Midi Stuff
     float osc1Bend = mapfloat(slider1.getValue(), 0, 1023, 0, (calculateMidiBound(1, 1) - calculateMidiBound(1, 0)) * 8192 / 12);
     usbMIDI.sendPitchBend(osc1Bend, 1);
-//  Serial.println(slider1.getValue());
+    //  Serial.println(slider1.getValue());
   }
-  if( slider2.hasChanged() || true ) {
-    float osc2freq = mapfloat(slider2.getValue(), 0, 1023, calculateSliderBound(2, 0), calculateSliderBound(2, 1));
-    voice2a.frequency(osc2freq);
-    if (oscillatorDetuneAmount >= 0) {
-      voice2b.frequency(osc2freq + oscillatorDetuneAmount / 100 * osc2freq); 
-    } else {
-      voice2b.frequency(osc2freq + (oscillatorDetuneAmount / 100 * osc2freq) / 2);
-    }
+  if( slider2.hasChanged() ) {
     // Midi Stuff
     float osc2Bend = mapfloat(slider2.getValue(), 0, 1023, 0, (calculateMidiBound(2, 1) - calculateMidiBound(2, 0)) * 8192 / 12);
     usbMIDI.sendPitchBend(osc2Bend, 2);
-//  Serial.println(slider2.getValue());
+    // Serial.println(slider2.getValue());
   }
-  if( slider3.hasChanged() || true ) {
-    float osc3freq = mapfloat(slider3.getValue(), 0, 1023, calculateSliderBound(3, 0), calculateSliderBound(3, 1));
-    voice3a.frequency(osc3freq);
-    if (oscillatorDetuneAmount >= 0) {
-      voice3b.frequency(osc3freq + oscillatorDetuneAmount / 100 * osc3freq);
-    } else {
-      voice3b.frequency(osc3freq + (oscillatorDetuneAmount / 100 * osc3freq) / 2);
-    }
+  if( slider3.hasChanged() ) {
     // Midi Stuff
     float osc3Bend = mapfloat(slider3.getValue(), 0, 1023, 0, (calculateMidiBound(3, 1) - calculateMidiBound(3, 0)) * 8192 / 12);
     usbMIDI.sendPitchBend(osc3Bend, 3);
-//  Serial.println(slider3.getValue());
+    //  Serial.println(slider3.getValue());
   }
-  if( slider4.hasChanged() || true ) {
-    float osc4freq = mapfloat(slider4.getValue(), 0, 1023, calculateSliderBound(4, 0), calculateSliderBound(4, 1));
-    voice4a.frequency(osc4freq);
-    if (oscillatorDetuneAmount >= 0) {
-      voice4b.frequency(osc4freq + oscillatorDetuneAmount / 100 * osc4freq);
-    } else {
-      voice4b.frequency(osc4freq + (oscillatorDetuneAmount / 100 * osc4freq) / 2);
-    }
+  if( slider4.hasChanged() ) {
     // Midi Stuff
     float osc4Bend = mapfloat(slider4.getValue(), 0, 1023, 0, (calculateMidiBound(4, 1) - calculateMidiBound(4, 0)) * 8192 / 12);
     usbMIDI.sendPitchBend(osc4Bend, 4);
-//  Serial.println(slider4.getValue());
+    //  Serial.println(slider4.getValue());
   }
 }
 
